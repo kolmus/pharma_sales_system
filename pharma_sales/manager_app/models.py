@@ -16,6 +16,11 @@ VAT = (
     (1, '0.08'),
     (2, '0.23')
 )
+PAYMENT_STATUS = (
+    (1, 'Opłacona')
+    (2, 'Nieopłacona')
+    (3, 'Po terminie')
+)
 
 class Employee(models.Model):
     first_name = models.CharField(max_length=64, verbose_name="Imię: ")
@@ -99,12 +104,23 @@ class Batch(models.Model):
     
     def __str__(self):
         return self.number
-
+    
+    
+class Invoice(models.Model):
+    number = models.CharField(max_length=32, verbose_name='Numer Faktury: ')
+    date = models.DateField(auto_now=True, verbose_name='Data wystawienia: ')
+    status = models.IntegerField(choces=PAYMENT_STATUS, verbose_name='Status płatności: ')
+    payment_date = models.DateField(verbose_name='Termin płatności: ')
+    
+    def __str__(self):
+        return self.number
+    
+    
 class Order(models.Model):
     order_number = models.CharField(max_length=32, verbose_name='Numer zamówienia: ')
     client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name="Klient: ")
     variant = models.ManyToManyField(Variant, verbose_name='Pozycje: ', related_name='Order: ')
-    invoice = models.ForeignKey('Invoice', on_delete=SET_NULL, null=True, verbose_name="Faktura: ")
+    invoice = models.ForeignKey(Invoice, on_delete=SET_NULL, null=True, verbose_name="Faktura: ")
     order_quantity = IntegerField(verbose_name='Ilość: ')
     discount = models.IntegerField(verbose_name='Zniżka: ')
     
@@ -112,7 +128,4 @@ class Order(models.Model):
         return self.order_number
     
     
-class Invoice(models.Model):
-    number = models.CharField(max_length=32, verbose_name='Numer Faktury')
-    date = models.DateField(auto_now=True)
-    
+
