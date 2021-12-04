@@ -102,6 +102,9 @@ class Batch(models.Model):
     quantity = IntegerField(verbose_name='Ilość produktów: ')
     variant = ForeignKey(Variant, on_delete=CASCADE, verbose_name='Produkt: ')
     
+    def brutto(self):
+        return str(float(self.netto) * (float(self.vat) + 1))
+    
     def __str__(self):
         return self.number
     
