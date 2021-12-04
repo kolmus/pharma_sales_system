@@ -17,8 +17,8 @@ VAT = (
     (2, '0.23')
 )
 PAYMENT_STATUS = (
-    (1, 'Opłacona')
-    (2, 'Nieopłacona')
+    (1, 'Opłacona'),
+    (2, 'Nieopłacona'),
     (3, 'Po terminie')
 )
 
@@ -28,7 +28,7 @@ class Employee(models.Model):
     phone = models.IntegerField(verbose_name="Numer telefonu: ")
     email = models.CharField(max_length=80, verbose_name="Eadres e-mail: ")
     role = models.CharField(max_length=128, verbose_name='Stanowisko: ')
-    supervisor = models.ForeignKey('Employee', verbose_name='Przełożony: ', on_delete=models.SET_NULL)
+    supervisor = models.ForeignKey('Employee', verbose_name='Przełożony: ', on_delete=models.SET_NULL, null=True)
     is_active = models.BooleanField(verbose_name='Aktywny: ', default=True)
     
     @property
@@ -42,11 +42,11 @@ class Employee(models.Model):
 
 class Client(models.Model):
     company_name = models.CharField(max_length=128, verbose_name='Nazwa firmy: ')
-    logo = models.ImageField(upload_to='img/client/logo/', null=True)
+    # logo = models.ImageField(upload_to='img/client/logo/', null=True)
     nip = models.IntegerField(verbose_name='NIP: ')
     regon = models.IntegerField(verbose_name="REGON: ")
     krs = models.IntegerField(verbose_name="Numer KRS = ", null=True)
-    account_manager = models,ForeignKey(Employee, verbose_name="Opiekun klienta")
+    account_manager = models,ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Opiekun klienta")
     
     def __str__(self):
         return self.company_name
@@ -76,15 +76,15 @@ class Variant(models.Model):
     dose = IntegerField(verbose_name="Dawka: ")
     unit = IntegerField(choices=UNITS, verbose_name="Jednostka(dawki): ")
     in_package = IntegerField(verbose_name="Ilość w Opakowaniu")
-    photo_main = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie główne: ")
-    photo_2 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 2: ", null=True)
-    photo_3 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 3: ", null=True)
-    photo_4 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 4: ", null=True)
-    photo_5 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 5: ", null=True)
-    photo_6 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 6: ", null=True)
-    photo_7 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 7: ", null=True)
-    photo_8 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 8: ", null=True)
-    photo_9 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 9: ", null=True)
+    # photo_main = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie główne: ")
+    # photo_2 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 2: ", null=True)
+    # photo_3 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 3: ", null=True)
+    # photo_4 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 4: ", null=True)
+    # photo_5 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 5: ", null=True)
+    # photo_6 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 6: ", null=True)
+    # photo_7 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 7: ", null=True)
+    # photo_8 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 8: ", null=True)
+    # photo_9 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 9: ", null=True)
     photo_10 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 10: ", null=True)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name= "Produkt: ")
     next_delivery = models.DateField(null=True, verbose_name="Planowana data następnej dostawy: ")
@@ -109,7 +109,7 @@ class Batch(models.Model):
 class Invoice(models.Model):
     number = models.CharField(max_length=32, verbose_name='Numer Faktury: ')
     date = models.DateField(auto_now=True, verbose_name='Data wystawienia: ')
-    status = models.IntegerField(choces=PAYMENT_STATUS, verbose_name='Status płatności: ')
+    status = models.IntegerField(choices=PAYMENT_STATUS, verbose_name='Status płatności: ')
     payment_date = models.DateField(verbose_name='Termin płatności: ')
     
     def __str__(self):
@@ -119,7 +119,7 @@ class Invoice(models.Model):
 class Order(models.Model):
     order_number = models.CharField(max_length=32, verbose_name='Numer zamówienia: ')
     client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name="Klient: ")
-    variant = models.ManyToManyField(Variant, verbose_name='Pozycje: ', related_name='Order: ')
+    variant = models.ManyToManyField(Variant, verbose_name='Pozycje: ', related_name='order')
     invoice = models.ForeignKey(Invoice, on_delete=SET_NULL, null=True, verbose_name="Faktura: ")
     order_quantity = IntegerField(verbose_name='Ilość: ')
     discount = models.IntegerField(verbose_name='Zniżka: ')
