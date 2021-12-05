@@ -21,7 +21,10 @@ PAYMENT_STATUS = (
     (2, 'Nieopłacona'),
     (3, 'Po terminie')
 )
-
+CLIENT_TYPE = (
+    (1, 'Apteka sieciowa'),
+    (2, 'Apteka rodzinna')
+)
 class Employee(models.Model):
     first_name = models.CharField(max_length=64, verbose_name="Imię: ")
     last_name = models.CharField(max_length=64, verbose_name="Nazwisko: ")
@@ -47,6 +50,7 @@ class Client(models.Model):
     regon = models.IntegerField(verbose_name="REGON: ")
     krs = models.IntegerField(verbose_name="Numer KRS = ", null=True)
     account_manager = models,ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Opiekun klienta")
+    type = models.IntegerField(choices=CLIENT_TYPE, verbose_name='Rodzaj apteki: ')
     
     def __str__(self):
         return self.company_name
@@ -85,7 +89,7 @@ class Variant(models.Model):
     # photo_7 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 7: ", null=True)
     # photo_8 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 8: ", null=True)
     # photo_9 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 9: ", null=True)
-    photo_10 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 10: ", null=True)
+    # photo_10 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 10: ", null=True)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name= "Produkt: ")
     next_delivery = models.DateField(null=True, verbose_name="Planowana data następnej dostawy: ")
     
@@ -130,5 +134,5 @@ class Order(models.Model):
     def __str__(self):
         return self.order_number
     
-    
-
+    # TODO model wizyty
+    # TODO model 
