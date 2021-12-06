@@ -63,7 +63,6 @@ class Employee(models.Model):
         return self.name
 
 
-
 class Client(models.Model):
     company_name = models.CharField(max_length=128, verbose_name='Nazwa firmy: ')
     logo = models.ImageField(upload_to='img/client/logo/', null=True)
@@ -74,6 +73,7 @@ class Client(models.Model):
     
     def __str__(self):
         return self.company_name
+
 
 class Branch(models.Model):
     city = models.CharField(max_length=20, verbose_name='Miejscowość; ')
@@ -92,7 +92,8 @@ class Branch(models.Model):
     
     def __str__(self):
         return f'{self.client} - {self.name_of_branch}'
-    
+
+
 class Product(models.Model):
     name = models.CharField(max_length=128, verbose_name='Nazwa produktu')
     description = models.TextField(verbose_name='Opis: ', null=True)
@@ -100,8 +101,8 @@ class Product(models.Model):
     
     def __str__(self):
         return self.name
-    
-    
+
+
 class Variant(models.Model):
     dose = IntegerField(verbose_name="Dawka: ")
     unit = IntegerField(choices=UNITS, verbose_name="Jednostka(dawki): ")
@@ -121,8 +122,8 @@ class Variant(models.Model):
     
     def __str__(self):
         return f'Dawka {self.dose}{self.unit}'
-    
-    
+
+
 class Batch(models.Model):
     number = models.CharField(max_length=8, verbose_name="numer Partii: ")
     ean = models.IntegerField(verbose_name='EAN: ')
@@ -137,8 +138,8 @@ class Batch(models.Model):
     
     def __str__(self):
         return self.number
-    
-    
+
+
 class Invoice(models.Model):
     number = models.CharField(max_length=32, verbose_name='Numer Faktury: ')
     date = models.DateField(auto_now=True, verbose_name='Data wystawienia: ')
@@ -147,8 +148,8 @@ class Invoice(models.Model):
     
     def __str__(self):
         return self.number
-    
-    
+
+
 class Order(models.Model):
     order_number = models.CharField(max_length=32, verbose_name='Numer zamówienia: ')
     client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name="Klient: ")
@@ -160,7 +161,8 @@ class Order(models.Model):
     
     def __str__(self):
         return self.order_number
-    
+
+
 class Visit(models.Model):
     date = models.DateTimeField(verbose_name='Data wizyty: ', auto_now_add=True)
     visited = models.BooleanField(verbose_name='Wizyta wykonana: ', default=False)
