@@ -31,5 +31,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view()),
     path('', DashbaordView.as_view()),
     path('employees/', EmployeeView.as_view()),
-    path('employee/add/', EmployeAddView.as_view()),
+    path('employees/add/', EmployeAddView.as_view()),
 ]

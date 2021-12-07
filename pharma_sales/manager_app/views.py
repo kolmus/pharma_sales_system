@@ -1,4 +1,3 @@
-from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -53,7 +52,7 @@ class DashbaordView(LoginRequiredMixin, View):
         return render(request, 'manager_app/dashboard.html')
 
 
-class EmployeeView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class EmployeeView(LoginRequiredMixin, View):
     """class fer Emlpoyers list Viev
 
     Args:
@@ -62,17 +61,16 @@ class EmployeeView(LoginRequiredMixin, PermissionRequiredMixin, View):
     Returns:
         team [QuerySet]: Objects of Employee model with 'supervisor' set on current user
     """
-    permission_required = 'manager_app.employee_list'
     
     def get(self, request):
         user = User.objects.get(id=request.user.id)
-        team = Employee.objects.filter(supervisor=user)
-        return render(request, 'manager_app/emloyees.html', {'team': team})
+        user_employee = user.employee
+        team = Employee.objects.filter(supervisor=user_employee)
+        print(team)
+        return render(request, 'manager_app/employees.html', {'team': team})
 
 
-class EmployeAddView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    permission_required = 'manager_app.employee_add'
-    
+class EmployeAddView(LoginRequiredMixin, View):
     def get(self, request):
         form = EmployeeAddForm()
         return render(request, 'manager_app/employee_add.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})

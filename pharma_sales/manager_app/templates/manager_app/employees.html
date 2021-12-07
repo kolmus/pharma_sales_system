@@ -1,0 +1,27 @@
+{% extends 'manager_app/base.html' %}
+{% block content %}
+    <table>
+        <thead>
+            <th>Pracownik</th>
+            <th>Sprzedaż za zeszły miesiąc</th>
+            <th>Sprzedaż w tym miesicu</th>
+            <th>Disiejsze wykonane</th>
+            <th>Dzisiejsze do zrobienia</th>
+            <th>Ilość zamówień dziś</th>
+            <th>Kwota zamówień dziś</th>
+        </thead>
+        <tbody>
+            {% for trader in team %}
+            <tr>
+                <td><a href="/employees/{{trader.id}}/">{{ trader.name }}</a></td>
+                <td>zeszly_miesiac</td>
+                <td>ten_miesiac</td>
+                <td>dzis_todo</td>
+                <td>dzis_done</td>
+                <td>deale_dzis</td>
+                <td>wartosc_dzis</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
