@@ -1,3 +1,4 @@
+from typing import ValuesView
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -5,7 +6,7 @@ from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteVi
 from django.views import View
 
 from .forms import LoginForm, EmployeeAddForm
-from .models import Employee
+from .models import Employee, Branch
 from django.contrib.auth.models import User
 
 class LoginView(View):
@@ -66,7 +67,6 @@ class EmployeeView(LoginRequiredMixin, View):
         user = User.objects.get(id=request.user.id)
         user_employee = user.employee
         team = Employee.objects.filter(supervisor=user_employee)
-        print(team)
         return render(request, 'manager_app/employees.html', {'team': team})
 
 
@@ -98,4 +98,7 @@ class EmployeAddView(LoginRequiredMixin, View):
             return render(request, 'manager_app/employee_add.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
 
 
-
+class EmployeeDetailsView(LoginRequiredMixin, View):
+    def get(self, request, id_):
+        employee = Employee.objects.get(id=id_)
+        return render(request, 'manager_app/employee_details.html', {'employee': employee})

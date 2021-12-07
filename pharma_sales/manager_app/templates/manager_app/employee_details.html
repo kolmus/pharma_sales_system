@@ -1,0 +1,49 @@
+{% extends 'manager_app/base.html' %}
+{% block content %}
+    <button>Edytuj Pracownika</button>
+    <h2>{{employee.name}}</h2>
+    <table>
+        <thead>
+            <th></th>
+            <th>zeszły miesiąc</th>
+            <th>Ten Miesiąc</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Sprzedaż</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Sprzedaż ilość zamówień</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </tbody>
+    <table>
+        <thead>
+            <th></th>
+            <th>Dziś</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Wizyty wykonane</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Wizyty zaplanowane</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Ilość zamówień</td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td>Wartość zamówień</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}
