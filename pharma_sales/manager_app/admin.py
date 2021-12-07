@@ -4,10 +4,10 @@ from .models import Employee, Client, Branch, Product, Variant, Batch, Invoice, 
 def not_active(model_admin, request, query_set):
     query_set.update(is_active=False)
     
-@admin.register(Employee)
-class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'phone', 'email', 'role', 'supervisor', 'is_active')
-    actions = [not_active]
+# @admin.register(Employee)
+# class EmployeeAdmin(admin.ModelAdmin):
+#     list_display = ('first_name', 'last_name', 'phone', 'email', 'role', 'supervisor', 'is_active')
+#     actions = [not_active]
     
     
 @admin.register(Client)

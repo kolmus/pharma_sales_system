@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.fields import CharField, IntegerField
 from django.db.models.fields.related import ForeignKey
+from django.contrib.auth.models import User
 
 ADRESS_TYPES = (
     (1, 'Adres korespondencyjny'),
@@ -47,17 +48,18 @@ ORDER_STATUS = (
     (8, 'Zakończone.')
 )
 class Employee(models.Model):
-    first_name = models.CharField(max_length=64, verbose_name="Imię: ")
-    last_name = models.CharField(max_length=64, verbose_name="Nazwisko: ")
+    # first_name = models.CharField(max_length=64, verbose_name="Imię: ")
+    # last_name = models.CharField(max_length=64, verbose_name="Nazwisko: ")
     phone = models.IntegerField(verbose_name="Numer telefonu: ")
-    email = models.CharField(max_length=80, verbose_name="Eadres e-mail: ")
+    # email = models.CharField(max_length=80, verbose_name="Eadres e-mail: ")
     role = models.CharField(max_length=128, verbose_name='Stanowisko: ')
     supervisor = models.ForeignKey('Employee', verbose_name='Przełożony: ', on_delete=models.SET_NULL, null=True)
-    is_active = models.BooleanField(verbose_name='Aktywny: ', default=True)
+    # is_active = models.BooleanField(verbose_name='Aktywny: ', default=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     
     @property
     def name(self):
-        return "{} {}".format(self.first_name, self.last_name)
+        return "{} {}".format(self.user.first_name, self.user.last_name)
     
     def __str__(self):
         return self.name
@@ -108,7 +110,7 @@ class Variant(models.Model):
     unit = IntegerField(choices=UNITS, verbose_name="Jednostka(dawki): ")
     in_package = IntegerField(verbose_name="Ilość w Opakowaniu")
     photo_main = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie główne: ", null=True)
-    photo_2 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 2: ", null=True)
+    photo_2 = models.ImageField(upload_to='static/img/products/', verbose_name="Zdjęcie 2: ", null=True)
     photo_3 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 3: ", null=True)
     photo_4 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 4: ", null=True)
     photo_5 = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie 5: ", null=True)
