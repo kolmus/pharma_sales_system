@@ -129,6 +129,7 @@ dmypy.json
 .pyre/
 # vscode
 .vscode
+pharma_sales/media
 
 #django
 pharma_sales/pharma_sales/settings.py
