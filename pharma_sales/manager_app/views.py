@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views import View
 
-from .forms import LoginForm, EmployeeAddForm
+from .forms import LoginForm, EmployeeAddForm, EmployeeEditForm
 from .models import Employee, Branch
 from django.contrib.auth.models import User
 
@@ -73,7 +73,7 @@ class EmployeeView(LoginRequiredMixin, View):
 class EmployeAddView(LoginRequiredMixin, View):
     def get(self, request):
         form = EmployeeAddForm()
-        return render(request, 'manager_app/employee_add.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
+        return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
     
     def post(self, request):
         form = EmployeeAddForm(request.POST)
@@ -84,7 +84,7 @@ class EmployeAddView(LoginRequiredMixin, View):
                 email=form.cleaned_data['email'],
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name'],
-                is_staff=True,
+                is_staff=False,
                 is_active=True,
             )
             new_employee = Employee.objects.create(
@@ -95,10 +95,43 @@ class EmployeAddView(LoginRequiredMixin, View):
             )
             return redirect(f'/employee/{new_employee.id}/')
         else:
-            return render(request, 'manager_app/employee_add.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
+            return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
 
 
 class EmployeeDetailsView(LoginRequiredMixin, View):
     def get(self, request, id_):
         employee = Employee.objects.get(id=id_)
         return render(request, 'manager_app/employee_details.html', {'employee': employee})
+
+class EmployeeEditView(LoginRequiredMixin, View):
+    def get(self, request, id_):
+        employee = Employee.objects.get(id=id_)
+        form = EmployeeEditForm(initial={
+            'first_name': employee.user.first_name,
+            'last_name': employee.user.last_name,
+            'email': employee.user.email,
+            'phone': employee.phone,
+            'role': employee.role,
+            'supervisor': employee.supervisor
+        })
+        
+        return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Edycja Pracownika'})
+    
+    def post(self, request, id_):
+        form = EmployeeAddForm(request.POST)
+        if form.is_valid():
+            edited_user = Employee.objects.get(id=id_).user
+            User.objects.update(
+                email=form.cleaned_data['email'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+            )
+            edited_employee = Employee.objects.create(
+                phone=form.cleaned_data['phone'],
+                role=form.cleaned_data['role'],
+                supervisor=form.cleaned_data['supervisor'],
+                user=edited_user
+            )
+            return redirect(f'/employee/{edited_employee.id}/')
+        else:
+            return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})

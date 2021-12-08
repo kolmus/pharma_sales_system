@@ -40,3 +40,12 @@ class PasswordResetForm(forms.Form):
         if password != password_repeated:
             raise forms.ValidationError('Hasła są różne!')
         return cleaned_data
+
+
+class EmployeeEditForm(forms.Form):
+    first_name = forms.CharField(label='Imię', )
+    last_name = forms.CharField(label='Nazwisko')
+    email = forms.EmailField(label='Email')
+    phone = forms.CharField(label='Numer telefonu')
+    role = forms.CharField(label='Stanowisko')
+    supervisor = forms.ModelChoiceField(queryset=Employee.objects.all(), empty_label='supervisor', label='Przełożony', required=False)

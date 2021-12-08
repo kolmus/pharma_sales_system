@@ -1,6 +1,6 @@
 {% extends 'manager_app/base.html' %}
 {% block content %}
-    <button>Edytuj Pracownika</button>
+    <a href="/employees/edit/{{employee.id}}/"><button>Edytuj Pracownika</button></a>
     <h2>{{employee.name}}</h2>
     <table>
         <thead>

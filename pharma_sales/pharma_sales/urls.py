@@ -22,7 +22,8 @@ from manager_app.views import (
     DashbaordView,
     EmployeeView,
     EmployeAddView,
-    EmployeeDetailsView
+    EmployeeDetailsView,
+    EmployeeEditView,
 )
 
 
@@ -33,5 +34,6 @@ urlpatterns = [
     path('', DashbaordView.as_view()),
     path('employees/', EmployeeView.as_view()),
     path('employees/add/', EmployeAddView.as_view()),
-    path('employees/<int:id_>/', EmployeeDetailsView.as_view())
+    path('employees/<int:id_>/', EmployeeDetailsView.as_view()),
+    path('employees/edit/<int:id_>/', EmployeeEditView.as_view()),
 ]
