@@ -1,0 +1,9 @@
+{% extends 'manager_app/base.html' %}
+{% block content %}
+    {% for product, variants in list.items %}
+        <h2>{{ product }}</h2>
+            {% for variant in variants %}
+            <h3>{{variant}}</h3>
+            {% endfor %}
+    {% endfor %}
+{% endblock %}

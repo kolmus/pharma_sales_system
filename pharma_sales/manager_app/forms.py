@@ -1,6 +1,6 @@
 from django import forms
 from django.forms.widgets import PasswordInput
-from .models import Client, Employee
+from .models import UNITS, Client, Employee, Product
 
 class LoginForm(forms.Form):
     """
@@ -58,3 +58,23 @@ class ClientForm(forms.ModelForm):
         model = Client
         fields = ['nip', 'company_name', 'logo', 'regon', 'krs', 'type']
         
+
+class VariantForm(forms.Form):
+    product = forms.ModelChoiceField(queryset=Product.objects.all(), label='Produkt główny')
+    dose = forms.IntegerField(label='Dawka (ilość)')
+    unit = forms.ChoiceField(choices=UNITS, label = 'Dawka(jednostka)')
+    in_package = forms.IntegerField(label='Ilość w pakiecie')
+    next_delivery = forms.DateField(label='Planowana dostawa', required=False)
+    photo_main = forms.ImageField(label='Zdjęcie główne', required=False)
+    photo2 = forms.ImageField(label='Zdjęcie2', required=False)
+    photo3 = forms.ImageField(label='Zdjęcie3', required=False)
+    photo4 = forms.ImageField(label='Zdjęcie4', required=False)
+    photo5 = forms.ImageField(label='Zdjęcie5', required=False)
+    photo6 = forms.ImageField(label='Zdjęcie6', required=False)
+    photo7 = forms.ImageField(label='Zdjęcie7', required=False)
+    photo8 = forms.ImageField(label='Zdjęcie8', required=False)
+    photo9 = forms.ImageField(label='Zdjęcie9', required=False)
+    photo10 = forms.ImageField(label='Zdjęcie10', required=False)
+    
+    
+    

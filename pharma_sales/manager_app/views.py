@@ -7,8 +7,8 @@ from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteVi
 from django.views import View
 from django.urls import reverse_lazy
 
-from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm
-from .models import Client, Employee, Branch
+from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm
+from .models import Client, Employee, Branch, Product, Variant
 from django.contrib.auth.models import User
 
 class LoginView(View):
@@ -165,6 +165,10 @@ class EmployeeEditView(LoginRequiredMixin, View):
         
 
 class ClientCreateView(LoginRequiredMixin, View):
+    """
+    Viev for create Client
+    redirect to Create Branch
+    """
     def get(self, request):
         form = ClientForm()
         return render(
@@ -184,7 +188,7 @@ class ClientCreateView(LoginRequiredMixin, View):
             new_client.krs = form.cleaned_data['krs']
             new_client.type = form.cleaned_data['type']
             new_client.save()
-            return redirect(f'/clients/{new_client.id}/add-branch/')
+            return redirect(f'/branch/add/')
         else:
             return render(
             request, 
@@ -198,6 +202,9 @@ class ClientCreateView(LoginRequiredMixin, View):
 
 
 class ClientDetailsView(LoginRequiredMixin, View):
+    """
+    View for details of client and branch
+    """
     def get(self, request, id_):
         client = Client.objects.get(id=id_)
         return render(request, 'manager_app/client_details.html', {'client': client})
@@ -213,15 +220,141 @@ class ClientListView(LoginRequiredMixin, View):
         print(clients)
         return render(request, 'manager_app/clients.html', {'clients': clients})
     
+    
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    View for update Client
+    """
     model = Client
     fields = '__all__'
     success_url = f'/clients/'
     
     
 class BranchCreateView(LoginRequiredMixin, CreateView):
+    """
+    View for create Branch
+    """
     model = Branch
     fields = '__all__'
-    success_url = '/branch/'
+    success_url = '/clients/'
 
 
+class BranchUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    View  for update Branch
+    """
+    model = Branch
+    fields = '__all__'
+    succes_url = '/clients/'
+    
+    
+class ProductCreateView(LoginRequiredMixin, CreateView):
+    """
+    View for create Product
+    """
+    model = Product
+    fields = '__all__'
+    success_url = '/variant/add/'
+
+
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    View  for update Branch
+    """
+    model = Product
+    fields = '__all__'
+    succes_url = '/products/'
+    
+class ProductListView(LoginRequiredMixin, View):
+    """
+    View for list of Products and Variants
+    """
+    def get(self, request):
+        products = Product.objects.all()
+        list = {}
+        for product in products:
+            list[product.name] = Variant.objects.filter(product_id=product)
+        return render(request, 'manager_app/products.html', {'products': list})
+
+class VariantCreateView(LoginRequiredMixin, View):
+    """
+    View for add new variants to product
+    """
+    def get(self, request):
+        form = VariantForm()
+        return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
+    
+    def post(self, request):
+        form = VariantForm(request.POST, request.FILES)
+        if form.is_valid():
+            variant = Variant()
+            variant.dose = form.cleaned_data['dose']
+            variant.unit = form.cleaned_data['unit']
+            variant.in_package = form.cleaned_data['in_package']
+            variant.photo_main = form.cleaned_data['photo_main']
+            variant.photo_2 = form.cleaned_data['photo2']
+            variant.photo_3 = form.cleaned_data['photo3']
+            variant.photo_4 = form.cleaned_data['photo4']
+            variant.photo_5 = form.cleaned_data['photo5']
+            variant.photo_6 = form.cleaned_data['photo6']
+            variant.photo_7 = form.cleaned_data['photo7']
+            variant.photo_8 = form.cleaned_data['photo8']
+            variant.photo_9 = form.cleaned_data['photo9']
+            variant.photo_10 = form.cleaned_data['photo10']
+            variant.product_id = form.cleaned_data['product']
+            variant.next_delivery = form.cleaned_data['next_delivery']
+            variant.save()
+            return redirect('/products/')
+        else:
+            return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
+
+
+class VariantUpdateView(LoginRequiredMixin, View):
+    """
+    View for update variants
+    """
+    def get(self, request, id_):
+        variant = Variant.objects.get(id=id_)
+        form = VariantForm(initial={
+            'product': variant.product_id,
+            'dose': variant.dose,
+            'unit': variant.unit,
+            'in_package': variant.in_package,
+            'next_delivery': variant.next_delivery,
+            'photo_main': variant.photo_main,
+            'photo2': variant.photo_2,
+            'photo3': variant.photo_3,
+            'photo4': variant.photo_4,
+            'photo5': variant.photo_5,
+            'photo6': variant.photo_6,
+            'photo7': variant.photo_7,
+            'photo8': variant.photo_8,
+            'photo9': variant.photo_9,
+            'photo10': variant.photo_10
+        })
+        return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Edytuj wariant produktu'})
+    
+    def post(self, request):
+        form = VariantForm(request.POST, request.FILES)
+        if form.is_valid():
+            variant = Variant()
+            variant.dose = form.cleaned_data['dose']
+            variant.unit = form.cleaned_data['unit']
+            variant.in_package = form.cleaned_data['in_package']
+            variant.photo_main = form.cleaned_data['photo_main']
+            variant.photo_2 = form.cleaned_data['photo2']
+            variant.photo_3 = form.cleaned_data['photo3']
+            variant.photo_4 = form.cleaned_data['photo4']
+            variant.photo_5 = form.cleaned_data['photo5']
+            variant.photo_6 = form.cleaned_data['photo6']
+            variant.photo_7 = form.cleaned_data['photo7']
+            variant.photo_8 = form.cleaned_data['photo8']
+            variant.photo_9 = form.cleaned_data['photo9']
+            variant.photo_10 = form.cleaned_data['photo10']
+            variant.product_id = form.cleaned_data['product']
+            variant.next_delivery = form.cleaned_data['next_delivery']
+            variant.save()
+            return redirect('/products/')
+        else:
+            return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
+        

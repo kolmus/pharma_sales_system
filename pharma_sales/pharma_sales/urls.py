@@ -31,6 +31,11 @@ from manager_app.views import (
     ClientDetailsView,
     ClientUpdateView,
     BranchCreateView,
+    ProductCreateView,
+    ProductUpdateView,
+    ProductListView,
+    VariantCreateView,
+    VariantUpdateView
 )
 
 
@@ -46,8 +51,13 @@ urlpatterns = [
     path('clients/', ClientListView.as_view()),
     path('clients/add/', ClientCreateView.as_view()),
     path('clients/<int:id_>/', ClientDetailsView.as_view()),
-    path('clients/edit/<int:pk>/', ClientUpdateView.as_view())
-    path('clients/<int:client_id>/add-branch/', BranchCreateView.as_view()),
+    path('clients/edit/<int:pk>/', ClientUpdateView.as_view()),
+    path('branch/add/', BranchCreateView.as_view()),
+    path('products/', ProductListView.as_view()),
+    path('products/add/', ProductCreateView.as_view()),
+    path('products/edit/<int:pk>/', ProductUpdateView.as_view()),
+    path('variant/add/', VariantCreateView.as_view()),
+    path('variant/edit/<int:id_>/', VariantUpdateView.as_view())
 ]
 
 if settings.DEBUG:
