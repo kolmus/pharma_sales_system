@@ -1,0 +1,9 @@
+{% extends 'manager_app/base.html' %}
+{% block content %}
+    {% for employee, client_branches in clients.items %}
+        <h2>{{ employee }}</h2>
+            {% for 1branch in client_branches %}
+            <h3>{{1branch}}</h3>
+            {% endfor %}
+    {% endfor %}
+{% endblock %}

@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from manager_app.views import (
     LoginView,
@@ -26,6 +28,9 @@ from manager_app.views import (
     EmployeeEditView,
     ClientCreateView,
     ClientListView,
+    ClientDetailsView,
+    ClientUpdateView,
+    BranchCreateView,
 )
 
 
@@ -40,4 +45,10 @@ urlpatterns = [
     path('employees/edit/<int:id_>/', EmployeeEditView.as_view()),
     path('clients/', ClientListView.as_view()),
     path('clients/add/', ClientCreateView.as_view()),
+    path('clients/<int:id_>/', ClientDetailsView.as_view()),
+    path('clients/edit/<int:pk>/', ClientUpdateView.as_view())
+    path('clients/<int:client_id>/add-branch/', BranchCreateView.as_view()),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

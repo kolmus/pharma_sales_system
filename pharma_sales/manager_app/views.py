@@ -7,7 +7,7 @@ from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteVi
 from django.views import View
 from django.urls import reverse_lazy
 
-from .forms import LoginForm, EmployeeAddForm, EmployeeEditForm
+from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm
 from .models import Client, Employee, Branch
 from django.contrib.auth.models import User
 
@@ -164,10 +164,43 @@ class EmployeeEditView(LoginRequiredMixin, View):
             return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
         
 
-class ClientCreateView(LoginRequiredMixin, CreateView):
-    model = Client
-    fields = '__all__'
-    success_url = f'/clients/'
+class ClientCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = ClientForm()
+        return render(
+            request, 
+            'manager_app/client_form.html', 
+            {'form': form, 'legend': 'Tworzenie nowego klienta'}
+        )
+        
+    def post(self, request):
+        form = ClientForm(request.POST, request.FILES)
+        if form.is_valid():
+            new_client = Client()
+            new_client.company_name = form.cleaned_data['company_name']
+            new_client.nip = form.cleaned_data['nip']
+            new_client.logo = form.cleaned_data['logo']
+            new_client.regon = form.cleaned_data['regon']
+            new_client.krs = form.cleaned_data['krs']
+            new_client.type = form.cleaned_data['type']
+            new_client.save()
+            return redirect(f'/clients/{new_client.id}/add-branch/')
+        else:
+            return render(
+            request, 
+            'manager_app/client_form.html', 
+            {
+                'form': form, 
+                'legend': 'Tworzenie nowego klienta', 
+                'answer': 'Wystąpił błąc. Spróbuj ponownie'
+            }
+        )
+
+
+class ClientDetailsView(LoginRequiredMixin, View):
+    def get(self, request, id_):
+        client = Client.objects.get(id=id_)
+        return render(request, 'manager_app/client_details.html', {'client': client})
 
 
 class ClientListView(LoginRequiredMixin, View):
@@ -175,6 +208,20 @@ class ClientListView(LoginRequiredMixin, View):
         traders = Employee.objects.filter(supervisor=request.user.employee)
         clients = {}
         for trader in traders:
-            branches = traders.branch.all()
-            print(branches)
-        return render(request, 'manager_ap/clients.html', {'clients': clients})
+            branches = Branch.objects.filter(account_manager=trader)
+            clients[trader.name] = branches
+        print(clients)
+        return render(request, 'manager_app/clients.html', {'clients': clients})
+    
+class ClientUpdateView(LoginRequiredMixin, UpdateView):
+    model = Client
+    fields = '__all__'
+    success_url = f'/clients/'
+    
+    
+class BranchCreateView(LoginRequiredMixin, CreateView):
+    model = Branch
+    fields = '__all__'
+    success_url = '/branch/'
+
+

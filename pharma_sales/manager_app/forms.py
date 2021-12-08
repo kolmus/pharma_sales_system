@@ -52,8 +52,9 @@ class EmployeeEditForm(forms.Form):
     
 
 class ClientForm(forms.ModelForm):
-    
+    logo = forms.ImageField(required=False)
+    krs = forms.IntegerField(required=False)
     class Meta:
         model = Client
-        fields = '__all__'
+        fields = ['nip', 'company_name', 'logo', 'regon', 'krs', 'type']
         

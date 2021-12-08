@@ -1,0 +1,14 @@
+{% extends 'manager_app/base.html' %}
+{% block content %}
+    Nazwa: {{client.company_name}}
+    NIP: {{client.nip}}
+    Logo: {{client.logo}}
+    REGON: {{client.regon}}
+    KRS: {{client.krs}}
+    Rodzaj apteki: {{client.type}}
+
+    Oddziały: 
+    {% for banch in client.branch_set.all %}
+        <p>{{branch.name_of_branch}}</p>
+    {% endfor %}
+{% endblock %}

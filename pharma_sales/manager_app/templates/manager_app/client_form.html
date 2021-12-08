@@ -2,10 +2,11 @@
 {% block content %}
     <form method="post">
         <fieldset>
-            <code>{{answer}}</code>
+            <legend>{{ legend }}</legend>
+            <code>{{ answer }}</code>
             {% csrf_token %}
             {{ form }}
-            <input type="submit" value="Zapisz">
+            <input type="submit" value="Zatwierdź">
         </fieldset>
     </form>
     
