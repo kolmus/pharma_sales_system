@@ -8,7 +8,7 @@
     Rodzaj apteki: {{client.type}}
 
     Oddziały: 
-    {% for banch in client.branch_set.all %}
-        <p>{{branch.name_of_branch}}</p>
+    {% for branch in client.branch_set.all %}
+        <p>{{branch.name_of_branch}} <a href="/branch/edit/branch.id/"><button>Edytuj oddział</button></a></p>
     {% endfor %}
 {% endblock %}

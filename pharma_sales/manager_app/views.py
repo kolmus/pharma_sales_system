@@ -240,7 +240,7 @@ class BranchUpdateView(LoginRequiredMixin, UpdateView):
     """
     model = Branch
     fields = '__all__'
-    succes_url = '/clients/'
+    success_url = '/clients/'
     
     
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -361,5 +361,4 @@ class BatchCreateView(LoginRequiredMixin, CreateView):
     model = Batch
     fields = '__all__'
     success_url = '/products/'
-
 

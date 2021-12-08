@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 
 from manager_app.views import (
     BatchCreateView,
+    BranchUpdateView,
     LoginView,
     LogoutView,
     DashbaordView,
@@ -54,6 +55,7 @@ urlpatterns = [
     path('clients/<int:id_>/', ClientDetailsView.as_view()),
     path('clients/edit/<int:pk>/', ClientUpdateView.as_view()),
     path('branch/add/', BranchCreateView.as_view()),
+    path('branch/edit/<int:pk>/', BranchUpdateView.as_view()),
     path('products/', ProductListView.as_view()),
     path('products/add/', ProductCreateView.as_view()),
     path('products/edit/<int:pk>/', ProductUpdateView.as_view()),

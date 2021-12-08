@@ -76,15 +76,16 @@ class Client(models.Model):
 
 
 class Branch(models.Model):
-    city = models.CharField(max_length=20, verbose_name='Miejscowość; ')
+    name_of_branch = models.CharField(max_length=60, verbose_name="Nazwa oddziału", null=True)
+    zip_code = models.CharField(max_length=6, verbose_name='Kod pocztowy')
+    province = models.CharField(max_length=16, verbose_name='Województwo', null=True)
+    city = models.CharField(max_length=20, verbose_name='Miejscowość')
     street = models.CharField(max_length=64, verbose_name='Ulica')
     building_number = models.CharField(max_length=8, verbose_name='Numer budynku')
     apartment_number = models.CharField(max_length=8, verbose_name="Numer lokalu", null=True)
-    zip_code = models.CharField(max_length=6, verbose_name='Kod pocztowy')
     type = models.IntegerField(choices=ADRESS_TYPES, verbose_name="rodzaj adresu")
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Klient")
     details = models.TextField(verbose_name='Szczególne informacje', null=True)
-    name_of_branch = models.CharField(max_length=60, verbose_name="Nazwa oddziału", null=True)
     account_manager = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Opiekun klienta", null=True)
     visit_days = models.IntegerField(choices=DAYS, verbose_name="Wizyty w dni tygodnia")
     visit_hour_from = models.TimeField(auto_now=False, verbose_name='Wizyty od godziny', null=True, default='08:00')
