@@ -1,9 +1,11 @@
 {% extends 'manager_app/base.html' %}
 {% block content %}
-    {% for employee, client_branches in clients.items %}
+    <a href="/clients/add/"><button>Dodaj Klienta</button></a>
+    <a href="/branch/add/"><button>Dodaj Oddział</button></a>
+    {% for employee in traders %}
         <h2>{{ employee }}</h2>
-            {% for 1branch in client_branches %}
-            <h3>{{1branch}}</h3>
+            {% for branch in employee.branch_set.all %}
+                {{ branch }} <a href="/branch/edit/{{branch.id}}/"><button>Edytuj oddział</button></a>
             {% endfor %}
     {% endfor %}
 {% endblock %}

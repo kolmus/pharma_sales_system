@@ -213,12 +213,7 @@ class ClientDetailsView(LoginRequiredMixin, View):
 class ClientListView(LoginRequiredMixin, View):
     def get(self, request):
         traders = Employee.objects.filter(supervisor=request.user.employee)
-        clients = {}
-        for trader in traders:
-            branches = Branch.objects.filter(account_manager=trader)
-            clients[trader.name] = branches
-        print(clients)
-        return render(request, 'manager_app/clients.html', {'clients': clients})
+        return render(request, 'manager_app/clients.html', {'traders': traders})
     
     
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
