@@ -1,12 +1,14 @@
 from typing import ValuesView
+from django.db.models import fields
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views import View
+from django.urls import reverse_lazy
 
 from .forms import LoginForm, EmployeeAddForm, EmployeeEditForm
-from .models import Employee, Branch
+from .models import Client, Employee, Branch
 from django.contrib.auth.models import User
 
 class LoginView(View):
@@ -70,7 +72,13 @@ class EmployeeView(LoginRequiredMixin, View):
         return render(request, 'manager_app/employees.html', {'team': team})
 
 
-class EmployeAddView(LoginRequiredMixin, View):
+class EmployeeCreateView(LoginRequiredMixin, View):
+    """View fo creating new users.
+    Creates new user and new Emploee
+        
+    Returns: 
+        
+    """
     def get(self, request):
         form = EmployeeAddForm()
         return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
@@ -99,11 +107,30 @@ class EmployeAddView(LoginRequiredMixin, View):
 
 
 class EmployeeDetailsView(LoginRequiredMixin, View):
+    """ 
+    Details Viev for Employee model  objects
+
+    Args:
+        
+        id_ (int): id of object in Emploee model
+    Returns:
+        employee [object]: Emloyee object
+    """
     def get(self, request, id_):
         employee = Employee.objects.get(id=id_)
         return render(request, 'manager_app/employee_details.html', {'employee': employee})
 
 class EmployeeEditView(LoginRequiredMixin, View):
+    """
+    View for modify Empployee models
+
+    Args:
+        id_ (int): id of emloyee object
+    
+    Returns:
+        form : with curent values
+        legend (str): legend for form
+    """
     def get(self, request, id_):
         employee = Employee.objects.get(id=id_)
         form = EmployeeEditForm(initial={
@@ -135,3 +162,19 @@ class EmployeeEditView(LoginRequiredMixin, View):
             return redirect(f'/employee/{edited_employee.id}/')
         else:
             return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
+        
+
+class ClientCreateView(LoginRequiredMixin, CreateView):
+    model = Client
+    fields = '__all__'
+    success_url = f'/clients/'
+
+
+class ClientListView(LoginRequiredMixin, View):
+    def get(self, request):
+        traders = Employee.objects.filter(supervisor=request.user.employee)
+        clients = {}
+        for trader in traders:
+            branches = traders.branch.all()
+            print(branches)
+        return render(request, 'manager_ap/clients.html', {'clients': clients})

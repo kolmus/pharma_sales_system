@@ -1,6 +1,6 @@
 from django import forms
 from django.forms.widgets import PasswordInput
-from .models import Employee
+from .models import Client, Employee
 
 class LoginForm(forms.Form):
     """
@@ -49,3 +49,11 @@ class EmployeeEditForm(forms.Form):
     phone = forms.CharField(label='Numer telefonu')
     role = forms.CharField(label='Stanowisko')
     supervisor = forms.ModelChoiceField(queryset=Employee.objects.all(), empty_label='supervisor', label='Przełożony', required=False)
+    
+
+class ClientForm(forms.ModelForm):
+    
+    class Meta:
+        model = Client
+        fields = '__all__'
+        

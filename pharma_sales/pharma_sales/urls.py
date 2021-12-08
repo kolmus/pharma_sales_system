@@ -21,9 +21,11 @@ from manager_app.views import (
     LogoutView,
     DashbaordView,
     EmployeeView,
-    EmployeAddView,
+    EmployeeCreateView,
     EmployeeDetailsView,
     EmployeeEditView,
+    ClientCreateView,
+    ClientListView,
 )
 
 
@@ -33,7 +35,9 @@ urlpatterns = [
     path('logout/', LogoutView.as_view()),
     path('', DashbaordView.as_view()),
     path('employees/', EmployeeView.as_view()),
-    path('employees/add/', EmployeAddView.as_view()),
+    path('employees/add/', EmployeeCreateView.as_view()),
     path('employees/<int:id_>/', EmployeeDetailsView.as_view()),
     path('employees/edit/<int:id_>/', EmployeeEditView.as_view()),
+    path('clients/', ClientListView.as_view()),
+    path('clients/add/', ClientCreateView.as_view()),
 ]
