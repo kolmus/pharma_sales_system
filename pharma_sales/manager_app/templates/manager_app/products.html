@@ -1,9 +1,17 @@
 {% extends 'manager_app/base.html' %}
 {% block content %}
-    {% for product, variants in list.items %}
+    {% for product, variants in products.items %}
         <h2>{{ product }}</h2>
             {% for variant in variants %}
             <h3>{{variant}}</h3>
+                {% for batch in variant.batch_set.all %}
+                    {% if bath.is_active == true %}
+                        <h4>Numer serii: {{batch.number}}</h4>
+                        <h5>Ilość pakietów w magazynie: {{batch.quantity}}</h5>
+                        <h5>Cena netto: {{batch.netto}}</h5>
+                        <h5>Data przydatności do użycia: {{batch.expiration_date}}</h5>
+                    {% endif %}
+                {% endfor %}
             {% endfor %}
     {% endfor %}
 {% endblock %}

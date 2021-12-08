@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from manager_app.views import (
+    BatchCreateView,
     LoginView,
     LogoutView,
     DashbaordView,
@@ -57,7 +58,9 @@ urlpatterns = [
     path('products/add/', ProductCreateView.as_view()),
     path('products/edit/<int:pk>/', ProductUpdateView.as_view()),
     path('variant/add/', VariantCreateView.as_view()),
-    path('variant/edit/<int:id_>/', VariantUpdateView.as_view())
+    path('variant/edit/<int:id_>/', VariantUpdateView.as_view()),
+    path('batch/add/', BatchCreateView.as_view()),
+    
 ]
 
 if settings.DEBUG:

@@ -1,7 +1,5 @@
 from django.db import models
 from django.db.models.deletion import CASCADE, SET_NULL
-from django.db.models.fields import CharField, IntegerField
-from django.db.models.fields.related import ForeignKey
 from django.contrib.auth.models import User
 
 ADRESS_TYPES = (
@@ -100,15 +98,16 @@ class Product(models.Model):
     name = models.CharField(max_length=128, verbose_name='Nazwa produktu')
     description = models.TextField(verbose_name='Opis', null=True)
     active_substance = models.CharField(max_length=64, verbose_name='Substancja czynna')
+    is_active = models.BooleanField(default=True, verbose_name='W sprzedaży')
     
     def __str__(self):
         return self.name
 
 
 class Variant(models.Model):
-    dose = IntegerField(verbose_name="Dawka")
-    unit = IntegerField(choices=UNITS, verbose_name="Jednostka(dawki)")
-    in_package = IntegerField(verbose_name="Ilość w Opakowaniu")
+    dose = models.IntegerField(verbose_name="Dawka")
+    unit = models.IntegerField(choices=UNITS, verbose_name="Jednostka(dawki)")
+    in_package = models.IntegerField(verbose_name="Ilość w Opakowaniu")
     photo_main = models.ImageField(upload_to='img/products/', verbose_name="Zdjęcie główne", null=True)
     photo_2 = models.ImageField(upload_to='media/img/products/', verbose_name="Zdjęcie 2", null=True)
     photo_3 = models.ImageField(upload_to='media/img/products/', verbose_name="Zdjęcie 3", null=True)
@@ -121,19 +120,21 @@ class Variant(models.Model):
     photo_10 = models.ImageField(upload_to='media/img/products/', verbose_name="Zdjęcie 10", null=True)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name= "Produkt")
     next_delivery = models.DateField(null=True, verbose_name="Planowana data następnej dostawy")
+    is_active = models.BooleanField(default=True, verbose_name='W sprzedaży')
     
     def __str__(self):
         return f'Dawka {self.dose}{self.unit}'
 
 
 class Batch(models.Model):
-    number = models.CharField(max_length=8, verbose_name="numer Partii")
+    number = models.CharField(max_length=32, verbose_name="numer Partii")
     ean = models.IntegerField(verbose_name='EAN')
     expiration_date = models.DateField(verbose_name="data Przydatności do użycia")
     netto = models.FloatField(verbose_name="cena netto")
-    vat = IntegerField(choices=VAT, verbose_name='Starka podatku vat')
-    quantity = IntegerField(verbose_name='Ilość produktów')
-    variant = ForeignKey(Variant, on_delete=CASCADE, verbose_name='Produkt')
+    vat = models.IntegerField(choices=VAT, verbose_name='Starka podatku vat')
+    quantity = models.IntegerField(verbose_name='Ilość produktów')
+    variant = models.ForeignKey(Variant, on_delete=CASCADE, verbose_name='Produkt')
+    is_active = models.BooleanField(default=True, verbose_name="W sprzedaży")
     
     def brutto(self):
         return str(float(self.netto) * (float(self.vat) + 1))
@@ -157,7 +158,7 @@ class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name="Klient")
     variant = models.ManyToManyField(Variant, verbose_name='Pozycje', related_name='order')
     invoice = models.ForeignKey(Invoice, on_delete=SET_NULL, null=True, verbose_name="Faktura")
-    order_quantity = IntegerField(verbose_name='Ilość')
+    order_quantity = models.IntegerField(verbose_name='Ilość')
     discount = models.IntegerField(verbose_name='Zniżka')
     order_status = models.IntegerField(choices=ORDER_STATUS, verbose_name='Status zamówienia', default=1)
     

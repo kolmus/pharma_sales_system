@@ -8,7 +8,7 @@ from django.views import View
 from django.urls import reverse_lazy
 
 from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm
-from .models import Client, Employee, Branch, Product, Variant
+from .models import Batch, Client, Employee, Branch, Product, Variant
 from django.contrib.auth.models import User
 
 class LoginView(View):
@@ -270,10 +270,10 @@ class ProductListView(LoginRequiredMixin, View):
     View for list of Products and Variants
     """
     def get(self, request):
-        products = Product.objects.all()
+        products = Product.objects.filter(is_active=True)
         list = {}
         for product in products:
-            list[product.name] = Variant.objects.filter(product_id=product)
+            list[product.name] = Variant.objects.filter(product_id=product, is_active=True)
         return render(request, 'manager_app/products.html', {'products': list})
 
 class VariantCreateView(LoginRequiredMixin, View):
@@ -358,3 +358,13 @@ class VariantUpdateView(LoginRequiredMixin, View):
         else:
             return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
         
+
+class BatchCreateView(LoginRequiredMixin, CreateView):
+    """
+    View for create Batch
+    """
+    model = Batch
+    fields = '__all__'
+    success_url = '/products/'
+
+
