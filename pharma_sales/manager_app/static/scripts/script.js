@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             
                             if (obj.length < 10) {
                                 // this block is for small listst
-                                obj.array.forEach(element => {
+                                obj.foreach(element => {                   // <= problem
                                     if (element['miejscowosc'] != obj[0]['miejscowosc]']) {
                                         // if difrent cities
 

@@ -6,9 +6,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views import View
 from django.urls import reverse_lazy
+from datetime import date
 
 from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm
-from .models import Batch, Client, Employee, Branch, Product, Variant
+from .models import Batch, Client, Employee, Branch, Product, Variant, Order
 from django.contrib.auth.models import User
 
 class LoginView(View):
@@ -69,6 +70,13 @@ class EmployeeView(LoginRequiredMixin, View):
         user = User.objects.get(id=request.user.id)
         user_employee = user.employee
         team = Employee.objects.filter(supervisor=user_employee)
+        
+        info = {}
+        for employee in team:
+            info['employee'] = employee
+            
+            
+        
         return render(request, 'manager_app/employees.html', {'team': team})
 
 
@@ -101,7 +109,7 @@ class EmployeeCreateView(LoginRequiredMixin, View):
                 supervisor=form.cleaned_data['supervisor'],
                 user=new_user
             )
-            return redirect(f'/employee/{new_employee.id}/')
+            return redirect(f'/employees/{new_employee.id}/')
         else:
             return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
 
@@ -196,7 +204,7 @@ class ClientCreateView(LoginRequiredMixin, View):
             {
                 'form': form, 
                 'legend': 'Tworzenie nowego klienta', 
-                'answer': 'Wystąpił błąc. Spróbuj ponownie'
+                'answer': 'Wystąpił błąd. Spróbuj ponownie'
             }
         )
 
@@ -361,4 +369,5 @@ class BatchCreateView(LoginRequiredMixin, CreateView):
     model = Batch
     fields = '__all__'
     success_url = '/products/'
+
 

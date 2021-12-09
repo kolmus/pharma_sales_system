@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.contrib.auth.models import User
 
+
 ADRESS_TYPES = (
     (1, 'Adres korespondencyjny'),
     (2, 'Adres Rejestracyjny'),
@@ -76,6 +77,8 @@ class Client(models.Model):
 
 
 class Branch(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Klient")
+    type = models.IntegerField(choices=ADRESS_TYPES, verbose_name="rodzaj adresu")
     name_of_branch = models.CharField(max_length=60, verbose_name="Nazwa oddziału", null=True)
     zip_code = models.CharField(max_length=6, verbose_name='Kod pocztowy')
     province = models.CharField(max_length=16, verbose_name='Województwo', null=True)
@@ -83,8 +86,6 @@ class Branch(models.Model):
     street = models.CharField(max_length=64, verbose_name='Ulica')
     building_number = models.CharField(max_length=8, verbose_name='Numer budynku')
     apartment_number = models.CharField(max_length=8, verbose_name="Numer lokalu", null=True)
-    type = models.IntegerField(choices=ADRESS_TYPES, verbose_name="rodzaj adresu")
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Klient")
     details = models.TextField(verbose_name='Szczególne informacje', null=True)
     account_manager = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Opiekun klienta", null=True)
     visit_days = models.IntegerField(choices=DAYS, verbose_name="Wizyty w dni tygodnia")
@@ -119,7 +120,7 @@ class Variant(models.Model):
     photo_8 = models.ImageField(upload_to='media/img/products/', verbose_name="Zdjęcie 8", null=True)
     photo_9 = models.ImageField(upload_to='media/img/products/', verbose_name="Zdjęcie 9", null=True)
     photo_10 = models.ImageField(upload_to='media/img/products/', verbose_name="Zdjęcie 10", null=True)
-    product_id = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name= "Produkt")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name= "Produkt")
     next_delivery = models.DateField(null=True, verbose_name="Planowana data następnej dostawy")
     is_active = models.BooleanField(default=True, verbose_name='W sprzedaży')
     
@@ -156,12 +157,13 @@ class Invoice(models.Model):
 
 class Order(models.Model):
     order_number = models.CharField(max_length=32, verbose_name='Numer zamówienia')
-    client = models.ForeignKey(Client, on_delete=models.PROTECT, verbose_name="Klient")
-    variant = models.ManyToManyField(Variant, verbose_name='Pozycje', related_name='order')
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, verbose_name="Klient")
+    batch = models.ManyToManyField(Batch, verbose_name='Pozycje', related_name='order', through='Cart')
     invoice = models.ForeignKey(Invoice, on_delete=SET_NULL, null=True, verbose_name="Faktura")
-    order_quantity = models.IntegerField(verbose_name='Ilość')
     discount = models.IntegerField(verbose_name='Zniżka')
     order_status = models.IntegerField(choices=ORDER_STATUS, verbose_name='Status zamówienia', default=1)
+    date = models.DateField(auto_now_add=True, null=True)
+    
     
     def __str__(self):
         return self.order_number
@@ -174,4 +176,12 @@ class Visit(models.Model):
     trader = models.ForeignKey(Employee, on_delete=models.PROTECT ,verbose_name="Handlowiec")
     client_branch = models.ForeignKey(Branch, on_delete=models.PROTECT, verbose_name="Klient")
     note = models.TextField(verbose_name="Notatka handlowca")
+    
+    
+class Cart(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Zamówienie')
+    batch = models.ForeignKey(Batch, on_delete=models.PROTECT, verbose_name='Produkt i wariant')
+    quantity = models.IntegerField(verbose_name='Ilość')
+    
+    
     

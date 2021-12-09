@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'pharma_sales.wsgi.application'
 DATABASES = {
     'default': {
         'HOST': '127.0.0.1',
-        'NAME': 'pharma_db',
+        'NAME': 'pharma_project',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'USER': 'postgres',
         'PASSWORD': 'coderslab',

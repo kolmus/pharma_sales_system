@@ -73,10 +73,9 @@ class InvoiceAdmin(admin.ModelAdmin):
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
         'order_number',
-        'client',
+        'branch',
         # 'variant',
         'invoice',
-        'order_quantity',
         'discount',
         'order_status'
     )
