@@ -8,8 +8,8 @@ from django.views import View
 from django.urls import reverse_lazy
 from datetime import date
 
-from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm
-from .models import Batch, Client, Employee, Branch, Product, Variant, Order
+from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm, CartForm
+from .models import Batch, Client, Employee, Branch, Product, Variant, Order, Cart
 from django.contrib.auth.models import User
 
 class LoginView(View):
@@ -371,3 +371,43 @@ class BatchCreateView(LoginRequiredMixin, CreateView):
     success_url = '/products/'
 
 
+class OrderCreateView(LoginRequiredMixin, View):
+    def get(self, request, branch_id):
+        branch = Branch.objects.get(id=branch_id)
+        form = CartForm()
+        return render(request, 'manager_app/order_form.html', {'title': f'Nowe zamówienie dla {branch}', 'form': form})
+
+    def post(self, request, branch_id):
+        form = CartForm(request.POST)
+        if form.is_valid():
+            branch = Branch.objects.get(id = branch_id)
+            
+            today = date.today()
+            order_number = '{}/{}/{}/{}'.format(
+                branch.id,
+                today.year,
+                today.month,
+                len(Order.objects.filter(branch=branch, date__year__gte=int(today.year), date__month__gte=int(today.month)))+1
+            )
+            order = Order.objects.create(
+                order_number=order_number,
+                branch=branch,
+            )
+            
+            cart = Cart()
+            cart.order = order
+            cart.quantity = int(form.cleaned_data['quantity'])
+            
+            variant = form.cleaned_data.get('variant')
+            batch = variant.batch_set.filter(is_active=True)[0]
+            for element in variant.batch_set.filter(is_active=True):
+                if element.quantity < batch.quantity and element.quantity > int(form.cleaned_data['quantity']):
+                    batch  = element
+            cart.batch = batch
+            cart.save()
+            
+            return redirect(f'/branch/{branch.id}/orders/{order.id}/')
+        else:
+            return render(request, 'manager_app/order_form.html', {'title': f'Nowe zamówienie dla {branch}', 'form': form})
+    
+    

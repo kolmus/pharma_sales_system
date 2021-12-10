@@ -1,6 +1,6 @@
 from django import forms
 from django.forms.widgets import PasswordInput
-from .models import UNITS, Client, Employee, Product
+from .models import UNITS, Batch, Client, Employee, Product, Variant
 
 class LoginForm(forms.Form):
     """
@@ -30,8 +30,8 @@ class EmployeeAddForm (forms.Form):
 
 
 class PasswordResetForm(forms.Form):
-    new_password = forms.CharField(label='Wprowadź nowe hasło')
-    new_password2 = forms.CharField(label='Powtórz nowe hasło')
+    new_password = forms.CharField(label='Wprowadź nowe hasło', widget=forms.PasswordInput)
+    new_password2 = forms.CharField(label='Powtórz nowe hasło', widget=forms.PasswordInput)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -77,4 +77,18 @@ class VariantForm(forms.Form):
     photo10 = forms.ImageField(label='Zdjęcie10', required=False)
     
     
+class CartForm(forms.Form):
+    variant = forms.ModelChoiceField(queryset = Variant.objects.filter(is_active=True).order_by('dose'), empty_label='Wybierz produkt', label="Wybierz produkt")
+    quantity = forms.IntegerField(label='Podaj ilość paczek')
     
+    def clean(self):
+        cleaned_data = super().clean()
+        quantity = cleaned_data.get('quantity')
+        variant = cleaned_data.get('variant')
+        stock = 0
+        for batch in variant.batch_set.filter(is_active=True):
+            stock += batch.quantity
+        if quantity > 0 and quantity < stock:
+            return cleaned_data
+        else:
+            raise forms.ValidationError('Ilość mniejsza niż 0 lub większa niż stan magazynowy')

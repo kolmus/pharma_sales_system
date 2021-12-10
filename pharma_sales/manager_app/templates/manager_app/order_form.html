@@ -1,11 +1,12 @@
 {% extends 'manager_app/base.html' %}
 {% block content %}
+    <h3>{{title}}</h3>
+
     <form method="post">
         <fieldset>
             {% csrf_token %}
             {{ form }}
-            <input type="submit" value="Zatwierdź">
+            <input type="submit" value="Dodaj do zamówienia">
         </fieldset>
     </form>
-    
 {% endblock %}

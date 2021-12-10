@@ -125,7 +125,10 @@ class Variant(models.Model):
     is_active = models.BooleanField(default=True, verbose_name='W sprzedaży')
     
     def __str__(self):
-        return f'Dawka {self.dose}{self.unit}'
+        stock = 0
+        for n in self.batch_set.all():
+            stock += n.quantity
+        return f'{self.product.name}, Dawka {self.dose}{self.get_unit_display()}, {self.in_package}szt, Stock: {stock}'
 
 
 class Batch(models.Model):
@@ -160,7 +163,7 @@ class Order(models.Model):
     branch = models.ForeignKey(Branch, on_delete=models.PROTECT, verbose_name="Klient")
     batch = models.ManyToManyField(Batch, verbose_name='Pozycje', related_name='order', through='Cart')
     invoice = models.ForeignKey(Invoice, on_delete=SET_NULL, null=True, verbose_name="Faktura")
-    discount = models.IntegerField(verbose_name='Zniżka')
+    discount = models.IntegerField(verbose_name='Zniżka', default=0)
     order_status = models.IntegerField(choices=ORDER_STATUS, verbose_name='Status zamówienia', default=1)
     date = models.DateField(auto_now_add=True, null=True)
     
