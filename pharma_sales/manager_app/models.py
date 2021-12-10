@@ -37,8 +37,9 @@ DAYS = (
 )
 
 ORDER_STATUS = (
+    (0, 'Zamówienie w trakcie tworzenia.'),
     (1, 'Zamówienie przyjęte, oczekuje na weryfikację.'),
-    (2, 'Zamówienie zmienione, oczekuje na potwierdzenie.'),
+    (2, 'Zamówienie oczekuje na płatność'),
     (3, 'Potwierdzono zamówienie, przekazano do realizacji.'),
     (4, 'Skompletowane, oczekuje na kuriera.'),
     (5, 'Problem z zamówniem. Konieczność wyjaśnienia.'),
@@ -62,8 +63,8 @@ class Employee(models.Model):
     
     def __str__(self):
         return self.name
-
-
+    
+    
 class Client(models.Model):
     nip = models.IntegerField(verbose_name='NIP')
     company_name = models.CharField(max_length=128, verbose_name='Nazwa firmy')
@@ -164,11 +165,11 @@ class Order(models.Model):
     batch = models.ManyToManyField(Batch, verbose_name='Pozycje', related_name='order', through='Cart')
     invoice = models.ForeignKey(Invoice, on_delete=SET_NULL, null=True, verbose_name="Faktura")
     discount = models.IntegerField(verbose_name='Zniżka', default=0)
-    order_status = models.IntegerField(choices=ORDER_STATUS, verbose_name='Status zamówienia', default=1)
-    date = models.DateField(auto_now_add=True, null=True)
+    order_status = models.IntegerField(choices=ORDER_STATUS, verbose_name='Status zamówienia', default=0)
+    date = models.DateField(auto_now=True, null=True)
     
     def __str__(self):
-        return self.order_number
+        return f'{self.order_number} - {self.branch}'
     
     def total_netto(self):
         result = 0

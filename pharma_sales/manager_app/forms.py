@@ -52,7 +52,7 @@ class EmployeeEditForm(forms.Form):
     
 
 class ClientForm(forms.ModelForm):
-    logo = forms.ImageField(required=False)
+    # logo = forms.ImageField(required=False)
     krs = forms.IntegerField(required=False)
     class Meta:
         model = Client

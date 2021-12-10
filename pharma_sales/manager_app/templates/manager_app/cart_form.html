@@ -1,0 +1,41 @@
+{% extends 'manager_app/base.html' %}
+{% block content %}
+    <h3>{{title}}</h3>
+        {% if positions %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa produktu</th>
+                    <th>Cena netto za sztukę</th>
+                    <th>Ilość</th>
+                    <th>Łącznie</th>
+                    <th>Łącznie brutto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for position in positions %}
+                <tr>
+                    <td>{{position.batch.variant}}</td>
+                    <td>{{position.batch.netto}}zł</td>
+                    <td>{{position.quantity}}(szt)</td>
+                    <td>{{position.total_netto}}zł</td>
+                    <td>{{position.total_brutto}}zł</td>
+                    <td><a href="/orders/{{order.id}}/delete/{{position.id}}/"><button type="button">Usuń</button></a></td>
+                </tr>
+                
+                {% endfor %}
+            </tbody>
+            <h4>Razem: {{order.total_netto}}zł netto</h4> <a href="/branch/{{order.branch.id}}/orders/{{order.id}}/delete/{{position.id}}/status/1/"><button type="button">Przyjmij zamówienie</button></a>
+        </table>
+        {% else %}
+        Brak pozycji w zamówieniu <button></button>
+        {% endif %}
+        
+    <form method="post">
+        <fieldset>
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Dodaj do zamówienia">
+        </fieldset>
+    </form>
+{% endblock %}

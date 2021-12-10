@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from datetime import date
 
 from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm, CartForm
-from .models import Batch, Client, Employee, Branch, Product, Variant, Order, Cart
+from .models import ORDER_STATUS, Batch, Client, Employee, Branch, Product, Variant, Order, Cart
 from django.contrib.auth.models import User
 
 class LoginView(View):
@@ -80,13 +80,15 @@ class EmployeeView(LoginRequiredMixin, View):
         return render(request, 'manager_app/employees.html', {'team': team})
 
 
-class EmployeeCreateView(LoginRequiredMixin, View):
+class EmployeeCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """View fo creating new users.
     Creates new user and new Emploee
         
     Returns: 
         
     """
+    permission_required = 'auth.add_user'
+    
     def get(self, request):
         form = EmployeeAddForm()
         return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
@@ -380,7 +382,7 @@ class OrderCartCreateView(LoginRequiredMixin, View):
     def get(self, request, branch_id):
         branch = Branch.objects.get(id=branch_id)
         form = CartForm()
-        return render(request, 'manager_app/order_form.html', {'title': f'Nowe zamówienie dla {branch}', 'form': form})
+        return render(request, 'manager_app/cart_form.html', {'title': f'Nowe zamówienie dla {branch}', 'form': form})
 
     def post(self, request, branch_id):
         form = CartForm(request.POST)
@@ -415,7 +417,7 @@ class OrderCartCreateView(LoginRequiredMixin, View):
             
             return redirect(f'/branch/{branch.id}/orders/{order.id}/')
         else:
-            return render(request, 'manager_app/order_form.html', {'title': f'Nowe zamówienie dla {branch}', 'form': form})
+            return render(request, 'manager_app/cart_form.html', {'title': f'Nowe zamówienie dla {branch}', 'form': form})
 
 
 class CartModifyView(LoginRequiredMixin, View):
@@ -428,7 +430,7 @@ class CartModifyView(LoginRequiredMixin, View):
         
         positions = Cart.objects.filter(order=order).order_by('id')
         form = CartForm()
-        return render(request, 'manager_app/order_form.html', {
+        return render(request, 'manager_app/cart_form.html', {
             'title': f'Zamówienie dla {branch}', 
             'form': form,
             'positions': positions,
@@ -452,7 +454,7 @@ class CartModifyView(LoginRequiredMixin, View):
         
         branch = Branch.objects.get(id=branch_id)
         positions = Cart.objects.filter(order=order).order_by('id')
-        return render(request, 'manager_app/order_form.html', {
+        return render(request, 'manager_app/cart_form.html', {
             'title': f'Zamówienie dla {branch}', 
             'form': form,
             'positions': positions,
@@ -469,5 +471,47 @@ class CartDeleteView(LoginRequiredMixin, View):
         position.delete()
         
         return redirect(f'/branch/{branch_id}/orders/{order_id}/')
+
+
+class OrderStatusUpdateView(LoginRequiredMixin, View):
+    def get(self, request, branch_id, order_id, status_value):
+        order = Order.objects.get(id=order_id)
+        order.update(oder_status=status_value)
+        if status_value == 0:
+            return redirect(f'/branch/{branch_id}/orders/{order_id}/')
+        else:
+            return redirect('orders/')
+
+
+class OrderDeleteView(LoginRequiredMixin, View):
+    """
+    View for delete Order
+    """
+    def get(self, request, order_id):
+        order = Order.objects.get(id=order_id)
+        order.delete()
+        
+        return redirect(f'/orders/')
+
+
+class OrderListView(LoginRequiredMixin,View):
+    """
+    Lists of all Orders without ended
+    """
+    def get(self, request):
+        orders = Order.objects.filter(order_status__in=[0, 1, 2, 3, 4, 5, 6]).order_by('order_status', '-date')
+        
+        result = {}
+        for status in ORDER_STATUS:
+            st_orders = orders.filter(order_status = status[0])
+            result[status[1]] = st_orders
+        return render(request, 'manager_app/orders.html', {'orders': result})
     
-    
+class OrderCSModifyView(LoginRequiredMixin, UpdateView):
+    """
+    View for Customer Service to manage order manualy
+    """
+    model = Order
+    fields = ['order_number', 'branch', 'invoice', 'discount']
+    success_url = '/orders/'
+
