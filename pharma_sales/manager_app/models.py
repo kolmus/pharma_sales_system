@@ -173,13 +173,13 @@ class Order(models.Model):
     def total_netto(self):
         result = 0
         for position in self.cart_set.all():
-            result += position.total_netto
+            result += float(position.batch.netto) * position.quantity
         return result
     
     def total_brutto(self):
         result = 0
         for position in self.cart_set.all():
-            result += position.total_brutto
+            result += (float(position.batch.netto) * position.quantity) * (1 + float(position.batch.get_vat_display()))
         return result
 
 

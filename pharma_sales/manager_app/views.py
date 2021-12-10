@@ -128,6 +128,7 @@ class EmployeeDetailsView(LoginRequiredMixin, View):
         employee = Employee.objects.get(id=id_)
         return render(request, 'manager_app/employee_details.html', {'employee': employee})
 
+
 class EmployeeEditView(LoginRequiredMixin, View):
     """
     View for modify Empployee models
@@ -267,7 +268,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     fields = '__all__'
     succes_url = '/products/'
-    
+
 class ProductListView(LoginRequiredMixin, View):
     """
     View for list of Products and Variants
@@ -278,6 +279,7 @@ class ProductListView(LoginRequiredMixin, View):
         for product in products:
             list[product.name] = Variant.objects.filter(product_id=product, is_active=True)
         return render(request, 'manager_app/products.html', {'products': list})
+
 
 class VariantCreateView(LoginRequiredMixin, View):
     """
@@ -414,7 +416,8 @@ class OrderCartCreateView(LoginRequiredMixin, View):
             return redirect(f'/branch/{branch.id}/orders/{order.id}/')
         else:
             return render(request, 'manager_app/order_form.html', {'title': f'Nowe zamówienie dla {branch}', 'form': form})
-    
+
+
 class CartModifyView(LoginRequiredMixin, View):
     """
     View for adding posiotions to Cart
@@ -423,13 +426,14 @@ class CartModifyView(LoginRequiredMixin, View):
         branch = Branch.objects.get(id=branch_id)
         order = Order.objects.get(id=order_id)
         
-        cart = Cart.objects.filter(order=order).order_by('id')
+        positions = Cart.objects.filter(order=order).order_by('id')
         form = CartForm()
         return render(request, 'manager_app/order_form.html', {
             'title': f'Zamówienie dla {branch}', 
             'form': form,
-            'cart': cart
-        }) ### dodać pozycje i metodę post
+            'positions': positions,
+            'order': order
+        })
         
     def post(self, request, branch_id, order_id):
         form = CartForm(request.POST)
@@ -447,10 +451,23 @@ class CartModifyView(LoginRequiredMixin, View):
             new_cart.save()
         
         branch = Branch.objects.get(id=branch_id)
-        cart = Cart.objects.filter(order=order).order_by('id')
+        positions = Cart.objects.filter(order=order).order_by('id')
         return render(request, 'manager_app/order_form.html', {
             'title': f'Zamówienie dla {branch}', 
             'form': form,
-            'cart': cart
+            'positions': positions,
+            'order': order
         })
         
+        
+class CartDeleteView(LoginRequiredMixin, View):
+    """
+    View remove positiom from Cart
+    """
+    def get(self, request, branch_id, order_id, position_id):
+        position = Cart.objects.get(id=position_id)
+        position.delete()
+        
+        return redirect(f'/branch/{branch_id}/orders/{order_id}/')
+    
+    

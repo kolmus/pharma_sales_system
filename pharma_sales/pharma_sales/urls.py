@@ -40,6 +40,7 @@ from manager_app.views import (
     VariantUpdateView,
     OrderCartCreateView,
     CartModifyView,
+    CartDeleteView
 )
 
 
@@ -66,6 +67,7 @@ urlpatterns = [
     path('batch/add/', BatchCreateView.as_view()),
     path('branch/<int:branch_id>/orders/add/', OrderCartCreateView.as_view()),
     path('branch/<int:branch_id>/orders/<int:order_id>/', CartModifyView.as_view()),
+    path('branch/<int:branch_id>/orders/<int:order_id>/delete/<int:position_id>/', CartDeleteView.as_view()),
 ]
 
 if settings.DEBUG:
