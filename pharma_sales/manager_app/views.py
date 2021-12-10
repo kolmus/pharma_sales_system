@@ -371,7 +371,10 @@ class BatchCreateView(LoginRequiredMixin, CreateView):
     success_url = '/products/'
 
 
-class OrderCreateView(LoginRequiredMixin, View):
+class OrderCartCreateView(LoginRequiredMixin, View):
+    """
+    View for new Order and Cart
+    """
     def get(self, request, branch_id):
         branch = Branch.objects.get(id=branch_id)
         form = CartForm()
@@ -379,9 +382,10 @@ class OrderCreateView(LoginRequiredMixin, View):
 
     def post(self, request, branch_id):
         form = CartForm(request.POST)
-        if form.is_valid():
-            branch = Branch.objects.get(id = branch_id)
+        branch = Branch.objects.get(id = branch_id)
             
+        if form.is_valid():
+            # create order
             today = date.today()
             order_number = '{}/{}/{}/{}'.format(
                 branch.id,
@@ -394,6 +398,7 @@ class OrderCreateView(LoginRequiredMixin, View):
                 branch=branch,
             )
             
+            # Create cart
             cart = Cart()
             cart.order = order
             cart.quantity = int(form.cleaned_data['quantity'])
@@ -410,4 +415,42 @@ class OrderCreateView(LoginRequiredMixin, View):
         else:
             return render(request, 'manager_app/order_form.html', {'title': f'Nowe zamówienie dla {branch}', 'form': form})
     
-    
+class CartModifyView(LoginRequiredMixin, View):
+    """
+    View for adding posiotions to Cart
+    """
+    def get(self, request, branch_id, order_id):
+        branch = Branch.objects.get(id=branch_id)
+        order = Order.objects.get(id=order_id)
+        
+        cart = Cart.objects.filter(order=order).order_by('id')
+        form = CartForm()
+        return render(request, 'manager_app/order_form.html', {
+            'title': f'Zamówienie dla {branch}', 
+            'form': form,
+            'cart': cart
+        }) ### dodać pozycje i metodę post
+        
+    def post(self, request, branch_id, order_id):
+        form = CartForm(request.POST)
+        order = Order.objects.get(id=order_id)
+        if form.is_valid():
+            new_cart = Cart()
+            new_cart.order = order
+            new_cart.quantity = int(form.cleaned_data['quantity'])
+            variant = form.cleaned_data.get('variant')
+            batch = variant.batch_set.filter(is_active=True)[0]
+            for element in variant.batch_set.filter(is_active=True):
+                if element.quantity < batch.quantity and element.quantity > int(form.cleaned_data['quantity']):
+                    batch  = element
+            new_cart.batch = batch
+            new_cart.save()
+        
+        branch = Branch.objects.get(id=branch_id)
+        cart = Cart.objects.filter(order=order).order_by('id')
+        return render(request, 'manager_app/order_form.html', {
+            'title': f'Zamówienie dla {branch}', 
+            'form': form,
+            'cart': cart
+        })
+        

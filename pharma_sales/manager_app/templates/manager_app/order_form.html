@@ -1,7 +1,37 @@
 {% extends 'manager_app/base.html' %}
 {% block content %}
     <h3>{{title}}</h3>
-
+        {% if cart %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nazwa produktu</th>
+                    <th>Cena netto za sztukę</th>
+                    <th>Ilość</th>
+                    <th>Łącznie</th>
+                    <th>Łącznie brutto</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for position in cart %}
+                <tr>
+                    <td>{{position.batch.variant}}</td>
+                    <td>{{position.batch.netto}}zł</td>
+                    <td>{{position.quantity}}(szt)</td>
+                    <td>{{position.total_netto}}zł</td>
+                    <td>{{position.total_brutto}}zł</td>
+                    <td><a></a><button type="button">Usuń</button></td>
+                </tr>
+                    
+            {% empty %}
+                
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        Brak pozycji w zamówieniu <button></button>
+        {% endif %}
+        
     <form method="post">
         <fieldset>
             {% csrf_token %}

@@ -167,9 +167,21 @@ class Order(models.Model):
     order_status = models.IntegerField(choices=ORDER_STATUS, verbose_name='Status zamówienia', default=1)
     date = models.DateField(auto_now_add=True, null=True)
     
-    
     def __str__(self):
         return self.order_number
+    
+    def total_netto(self):
+        result = 0
+        for position in self.cart_set.all():
+            result += position.total_netto
+        return result
+    
+    def total_brutto(self):
+        result = 0
+        for position in self.cart_set.all():
+            result += position.total_brutto
+        return result
+
 
 
 class Visit(models.Model):
@@ -186,5 +198,13 @@ class Cart(models.Model):
     batch = models.ForeignKey(Batch, on_delete=models.PROTECT, verbose_name='Produkt i wariant')
     quantity = models.IntegerField(verbose_name='Ilość')
     
+    def total_netto(self):
+        result = float(self.batch.netto) * self.quantity
+        return result
     
+    def total_brutto(self):
+        total_netto = float(self.batch.netto) * self.quantity
+        result = round(total_netto * (1 + float(self.batch.get_vat_display())), 2)
+        return result
+        
     
