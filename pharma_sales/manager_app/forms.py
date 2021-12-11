@@ -1,6 +1,9 @@
+from typing_extensions import Required
 from django import forms
 from django.forms.widgets import PasswordInput
+from .views import request
 from .models import UNITS, Batch, Client, Employee, Product, Variant
+
 
 class LoginForm(forms.Form):
     """
@@ -92,6 +95,8 @@ class CartForm(forms.Form):
             return cleaned_data
         else:
             raise forms.ValidationError('Ilość mniejsza niż 0 lub większa niż stan magazynowy')
+        
 
-
-# class Calendar()
+class CalendarForm(forms.Form):
+    employee = forms.ModelChoiceField(queryset=None, label=False, required=False)
+    note = forms.CharField(label=False, widget=forms.Textarea(attrs={'placeholder': 'Notatka z dnia'}), required=False)

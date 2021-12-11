@@ -1,5 +1,6 @@
 from typing import ValuesView
 from django.db.models import fields
+from django.http import request
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -8,9 +9,10 @@ from django.views import View
 from django.urls import reverse_lazy
 from datetime import date, timedelta
 
-from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm, CartForm
-from .models import ORDER_STATUS, Batch, CalendarSupervisor, Client, Employee, Branch, Product, Variant, Order, Cart, CLIENT_TYPE
+from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm, CartForm, CalendarForm
+from .models import ORDER_STATUS, Batch, CalendarSupervisor, Client, Employee, Branch, Product, Variant, Order, Cart, CLIENT_TYPE, WEEKDAY
 from django.contrib.auth.models import User
+
 
 class LoginView(View):
     """View created for login page
@@ -47,12 +49,13 @@ class LogoutView(View):
         return redirect("/login/")
 
 
-class DashbaordView(LoginRequiredMixin, View):
+class DashboardView(LoginRequiredMixin, View):
     """
     Dashbord View - calendar of supervisor, monthly statistics of team.
     Login required.
     """
     def get(self, request):
+        
         today = date.today()
         days_in_calendar = 5
         
@@ -60,34 +63,89 @@ class DashbaordView(LoginRequiredMixin, View):
         weekday = today.weekday()
         
         last_monday = today - timedelta(days = weekday )
-        this_week = {}
-        for i in range(days_in_calendar):
-            final_date = last_monday + timedelta(days = i - 1)
-            meeting = CalendarSupervisor.objects.filter(date = final_date, owner = request.user.employee)
-            this_week[final_date] = meeting
+        team = Employee.objects.filter(supervisor = request.user.employee, is_active = True)
+        
         
         last_week_monday = last_monday - timedelta(days = 7)
         last_week = {}
         for i in range(days_in_calendar):
-            final_date = last_week_monday + timedelta(days = i - 1)
-            meeting = CalendarSupervisor.objects.filter(date = final_date, owner = request.user.employee)
-            last_week[final_date] = meeting
+            correct_date = last_week_monday + timedelta(days = i)
+            year, month, day = (int(x) for x in str(correct_date).split('-'))
+            final_date = f'{year}-{month}-{day} {WEEKDAY[correct_date.weekday()][1]}'
+            
+            if CalendarSupervisor.objects.filter(owner=request.user.employee, date=correct_date).exists():
+                meeting = CalendarSupervisor.objects.get(owner=request.user.employee, date=correct_date)
+                form = CalendarForm(initial={
+                    'note': meeting.note,
+                    'employee': meeting.employee 
+                })
+            else:
+                form = CalendarForm()
+                form.fields['employee'].queryset = team
+            last_week[final_date] = form
+        
+        
+        this_week = {}
+        for i in range(days_in_calendar):
+            correct_date = last_monday + timedelta(days = i)
+            year, month, day = (int(x) for x in str(correct_date).split('-'))
+            final_date = f'{year}-{month}-{day} {WEEKDAY[correct_date.weekday()][1]}'
+            
+            if CalendarSupervisor.objects.filter(owner=request.user.employee, date=correct_date).exists():
+                meeting = CalendarSupervisor.objects.get(owner=request.user.employee, date=correct_date)
+                form = CalendarForm(initial={
+                    'note': meeting.note,
+                    'employee': meeting.employee 
+                })
+            else:
+                form = CalendarForm()
+                form.fields['employee'].queryset = team
+            this_week[final_date] = form
+        
         
         next_monday = last_monday + timedelta( days=7)
         next_week = {}
         for i in range(days_in_calendar):
-            final_date = next_monday + timedelta(days = i - 1)
-            meeting = CalendarSupervisor.objects.filter(date = final_date, owner = request.user.employee)
-            next_week[final_date] = meeting
+            correct_date = next_monday + timedelta(days = i)
+            year, month, day = (int(x) for x in str(correct_date).split('-'))
+            final_date = f'{year}-{month}-{day} {WEEKDAY[correct_date.weekday()][1]}'
+            
+            if CalendarSupervisor.objects.filter(owner=request.user.employee, date=correct_date).exists():
+                meeting = CalendarSupervisor.objects.get(owner=request.user.employee, date=correct_date)
+                form = CalendarForm(initial={
+                    'note': meeting.note,
+                    'employee': meeting.employee 
+                })
+            else:
+                form = CalendarForm()
+                form.fields['employee'].queryset = team
+            next_week[final_date] = form
         
-        team = Employee.objects.filter(supervisor = request.user.employee)
         return render(request, 'manager_app/dashboard.html', {
             'last_week': last_week,
             'this_week': this_week,
             'next_week': next_week,
-            'team': team
         })
-
+        
+    def post(self, request):
+        team = Employee.objects.filter(supervisor = request.user.employee, is_active = True)
+        form = CalendarForm(request.POST)
+        form.fields['employee'].queryset = team
+        print(30*'########')
+        date_post = request.POST['date_cal']
+        date = date_post.split(' ')[0]
+        if form.is_valid():
+            print(request.user.employee)
+            meeting = CalendarSupervisor()
+            meeting.owner = request.user.employee
+            meeting.date = date
+            meeting.employee = form.cleaned_data['employee']
+            meeting.note = form.cleaned_data['note']
+            meeting.save()
+            print(meeting)
+        
+        return redirect('/orders/')
+        
 
 class EmployeeView(LoginRequiredMixin, View):
     """class fer Emlpoyers list Viev
@@ -540,6 +598,7 @@ class OrderListView(LoginRequiredMixin,View):
             st_orders = orders.filter(order_status = status[0])
             result[status[1]] = st_orders
         return render(request, 'manager_app/orders.html', {'orders': result})
+    
     
 class OrderCSModifyView(LoginRequiredMixin, UpdateView):
     """

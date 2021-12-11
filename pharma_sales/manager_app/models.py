@@ -17,24 +17,36 @@ VAT = (
     (1, '0.08'),
     (2, '0.23')
 )
+
+PAID = 1
+UNPAID = 2
+LATE_PAYMENT = 3
 PAYMENT_STATUS = (
-    (1, 'Opłacona'),
-    (2, 'Nieopłacona'),
-    (3, 'Po terminie')
+    (PAID, 'Opłacona'),
+    (UNPAID, 'Nieopłacona'),
+    (LATE_PAYMENT, 'Po terminie')
 )
+
 CLIENT_TYPE = (
     (1, 'Apteka sieciowa'),
     (2, 'Apteka rodzinna')
 )
 
+MONDAY = 0
+TUESDAY = 1
+WEDNESDAY = 2
+THURSDAY = 3
+FRIDAY = 4
+SATURDAY = 5
+SUNDAY = 7
 WEEKDAY = (
-    (0, 'Poniedziałek'),
-    (1, 'Wtorek'),
-    (2, 'Środa'),
-    (3, 'Czwartek'),
-    (4, 'Piątek'),
-    (5, 'Sobota'),
-    (6, 'Niedziela')
+    (MONDAY, 'Poniedziałek'),
+    (TUESDAY, 'Wtorek'),
+    (WEDNESDAY, 'Środa'),
+    (THURSDAY, 'Czwartek'),
+    (FRIDAY, 'Piątek'),
+    (SATURDAY, 'Sobota'),
+    (SUNDAY, 'Niedziela')
 )
 
 ORDER_STATUS = (
@@ -54,6 +66,8 @@ class Employee(models.Model):
     role = models.CharField(max_length=128, verbose_name='Stanowisko')
     supervisor = models.ForeignKey('Employee', verbose_name='Przełożony', on_delete=models.SET_NULL, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True, verbose_name='Zatrudniony')
+    is_supervisor = models.BooleanField(default=False, verbose_name='Stanowisko kierownicze')
     
     @property
     def name(self):

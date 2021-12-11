@@ -1,41 +1,108 @@
 {% extends 'manager_app/base.html' %}
 {% block content %}
-    <form method=post>
-    {% csrf_token %}
-        <table>
-            <thead>
-                {%for date, meeting in last_week.items %}
-                    <th>{{ date }}</th>
-                {% endfor %}
-            </thead>
-            <tbody>
-                <tr>
-                    {% for date_2, meeting_2 in last_week.items %}
-                        {% if meeting %} 
-                            <!-- nie wykonuje się -->
-                            <td>
-                                <a href="/employees/{{meeting_2.employee.id}}/">{{meeting_2.employee}}
-                                </a>
-                                <textarea name=note_{{meeting_id}}, placeholder="Notatka z dnia">{{meeting_2.note}}
-                                </textarea>
-                            </td>
-                        {% else %}
+<div class="calendar-position">
+    {% for date, form in last_week.items %}
+        <div class="calendar-element">
+            {{date}}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="hidden" name="date_cal" value="{{date}}">
+                <input type="submit" value="Zapisz">
+            </form>
+        </div>
+    {% endfor %}
+</div>
+<div class="calendar-position">
+    {% for date, form in this_week.items %}
+        <div class="calendar-element">
+            {{date}}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="hidden" name="date_cal" value="{{date}}">
+                <input type="submit" value="Zapisz">
+            </form>
+        </div>
+    {% endfor %}
+</div>
+<div class="calendar-position">
+    {% for date, form in next_week.items %}
+        <div class="calendar-element">
+            {{date}}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="hidden" name="date_cal" value="{{date}}">
+                <input type="submit" value="Zapisz">
+            </form>
+        </div>
+    {% endfor %}
+</div>
 
-                            <td>
-                                <select name="employee">
-                                    {% for employee in team %}
-                                    <option value="{{employee.id}}">
-                                        {{employee}}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                                <textarea name=note_{{}}, placeholder="Notatka z dnia"></textarea>
-                            </td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-            </tbody>
-        </table>
-        <button type="submit">Zapisz tydzień</button>
-    </form>
+
+
+    <!-- <table>
+        <thead>
+            {%for date, form in last_week.items %}
+                <th>{{ date }}</th>
+            {% endfor %}
+        </thead>
+        <tbody>
+            <tr>
+                {% for date, form in last_week.items %}
+                    <td>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="hidden" name="date_cal" value="{{date}}">
+                            <input type="submit" value="Zapisz">
+                        </form>
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <thead>
+            {%for date, form in this_week.items %}
+                <th>{{ date }}</th>
+            {% endfor %}
+        </thead>
+        <tbody>
+            <tr>
+                {% for date, form in this_week.items %}
+                    <td>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="hidden" name="date_cal" value="{{date}}">
+                            <input type="submit" value="Zapisz">
+                        </form>
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+    <table>
+        <thead>
+            {%for date, form in next_week.items %}
+                <th>{{ date }}</th>
+            {% endfor %}
+        </thead>
+        <tbody>
+            <tr>
+                {% for date, form in next_week.items %}
+                    <td>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="hidden" name="date_cal" value="{{date}}">
+                            <input type="submit" value="Zapisz">
+                        </form>
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table> -->
 {% endblock %}

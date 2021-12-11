@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelector('#id_city').value = result['miejscowosc']
                     document.querySelector('#id_city').style.background = 'green'
                     document.querySelector('#id_street').value = result['ulica']
-                    document.querySelector('#id_street').style.backgroun = 'green'
+                    document.querySelector('#id_street').style.background = 'green'
                     document.querySelector('#id_province').value = result['wojewodztwo']
                     document.querySelector('#id_province').style.backgroun = 'green'
 
