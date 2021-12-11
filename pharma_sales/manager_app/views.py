@@ -6,10 +6,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views import View
 from django.urls import reverse_lazy
-from datetime import date
+from datetime import date, timedelta
 
 from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm, CartForm
-from .models import ORDER_STATUS, Batch, Client, Employee, Branch, Product, Variant, Order, Cart
+from .models import ORDER_STATUS, Batch, CalendarSupervisor, Client, Employee, Branch, Product, Variant, Order, Cart, CLIENT_TYPE
 from django.contrib.auth.models import User
 
 class LoginView(View):
@@ -49,11 +49,44 @@ class LogoutView(View):
 
 class DashbaordView(LoginRequiredMixin, View):
     """
-    Dashbord View - general informations and statistics.
+    Dashbord View - calendar of supervisor, monthly statistics of team.
     Login required.
     """
     def get(self, request):
-        return render(request, 'manager_app/dashboard.html')
+        today = date.today()
+        days_in_calendar = 5
+        
+        year, month, day = (int(x) for x in str(today).split('-'))
+        weekday = today.weekday()
+        
+        last_monday = today - timedelta(days = weekday )
+        this_week = {}
+        for i in range(days_in_calendar):
+            final_date = last_monday + timedelta(days = i - 1)
+            meeting = CalendarSupervisor.objects.filter(date = final_date, owner = request.user.employee)
+            this_week[final_date] = meeting
+        
+        last_week_monday = last_monday - timedelta(days = 7)
+        last_week = {}
+        for i in range(days_in_calendar):
+            final_date = last_week_monday + timedelta(days = i - 1)
+            meeting = CalendarSupervisor.objects.filter(date = final_date, owner = request.user.employee)
+            last_week[final_date] = meeting
+        
+        next_monday = last_monday + timedelta( days=7)
+        next_week = {}
+        for i in range(days_in_calendar):
+            final_date = next_monday + timedelta(days = i - 1)
+            meeting = CalendarSupervisor.objects.filter(date = final_date, owner = request.user.employee)
+            next_week[final_date] = meeting
+        
+        team = Employee.objects.filter(supervisor = request.user.employee)
+        return render(request, 'manager_app/dashboard.html', {
+            'last_week': last_week,
+            'this_week': this_week,
+            'next_week': next_week,
+            'team': team
+        })
 
 
 class EmployeeView(LoginRequiredMixin, View):
@@ -476,11 +509,12 @@ class CartDeleteView(LoginRequiredMixin, View):
 class OrderStatusUpdateView(LoginRequiredMixin, View):
     def get(self, request, branch_id, order_id, status_value):
         order = Order.objects.get(id=order_id)
-        order.update(oder_status=status_value)
+        order.order_status = status_value
+        order.save()
         if status_value == 0:
             return redirect(f'/branch/{branch_id}/orders/{order_id}/')
         else:
-            return redirect('orders/')
+            return redirect('/orders/')
 
 
 class OrderDeleteView(LoginRequiredMixin, View):

@@ -92,3 +92,6 @@ class CartForm(forms.Form):
             return cleaned_data
         else:
             raise forms.ValidationError('Ilość mniejsza niż 0 lub większa niż stan magazynowy')
+
+
+# class Calendar()

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.contrib.auth.models import User
+from datetime import date
 
 
 ADRESS_TYPES = (
@@ -26,14 +27,14 @@ CLIENT_TYPE = (
     (2, 'Apteka rodzinna')
 )
 
-DAYS = (
-    (1, 'Poniedziałek'),
-    (2, 'Wtorek'),
-    (3, 'Środa'),
-    (4, 'Czwartek'),
-    (5, 'Piątek'),
-    (6, 'Sobota'),
-    (7, 'Niedziela')
+WEEKDAY = (
+    (0, 'Poniedziałek'),
+    (1, 'Wtorek'),
+    (2, 'Środa'),
+    (3, 'Czwartek'),
+    (4, 'Piątek'),
+    (5, 'Sobota'),
+    (6, 'Niedziela')
 )
 
 ORDER_STATUS = (
@@ -47,14 +48,11 @@ ORDER_STATUS = (
     (7, 'Oczekiwanie na płatność'),
     (8, 'Zakończone.')
 )
+
 class Employee(models.Model):
-    # first_name = models.CharField(max_length=64, verbose_name="Imię")
-    # last_name = models.CharField(max_length=64, verbose_name="Nazwisko")
     phone = models.IntegerField(verbose_name="Numer telefonu")
-    # email = models.CharField(max_length=80, verbose_name="Eadres e-mail")
     role = models.CharField(max_length=128, verbose_name='Stanowisko')
     supervisor = models.ForeignKey('Employee', verbose_name='Przełożony', on_delete=models.SET_NULL, null=True)
-    # is_active = models.BooleanField(verbose_name='Aktywny', default=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     
     @property
@@ -63,8 +61,8 @@ class Employee(models.Model):
     
     def __str__(self):
         return self.name
-    
-    
+
+
 class Client(models.Model):
     nip = models.IntegerField(verbose_name='NIP')
     company_name = models.CharField(max_length=128, verbose_name='Nazwa firmy')
@@ -89,7 +87,7 @@ class Branch(models.Model):
     apartment_number = models.CharField(max_length=8, verbose_name="Numer lokalu", null=True)
     details = models.TextField(verbose_name='Szczególne informacje', null=True)
     account_manager = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Opiekun klienta", null=True)
-    visit_days = models.IntegerField(choices=DAYS, verbose_name="Wizyty w dni tygodnia")
+    visit_days = models.IntegerField(choices=WEEKDAY, verbose_name="Wizyty w dni tygodnia")
     visit_hour_from = models.TimeField(auto_now=False, verbose_name='Wizyty od godziny', null=True, default='08:00')
     visit_hour_to = models.TimeField(auto_now=False, verbose_name="Wizyty do godziny", null=True, default ='16:00')
     
@@ -184,7 +182,6 @@ class Order(models.Model):
         return result
 
 
-
 class Visit(models.Model):
     date = models.DateTimeField(verbose_name='Data wizyty', auto_now_add=True)
     visited = models.BooleanField(verbose_name='Wizyta wykonana', default=False)
@@ -192,8 +189,8 @@ class Visit(models.Model):
     trader = models.ForeignKey(Employee, on_delete=models.PROTECT ,verbose_name="Handlowiec")
     client_branch = models.ForeignKey(Branch, on_delete=models.PROTECT, verbose_name="Klient")
     note = models.TextField(verbose_name="Notatka handlowca")
-    
-    
+
+
 class Cart(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Zamówienie')
     batch = models.ForeignKey(Batch, on_delete=models.PROTECT, verbose_name='Produkt i wariant')
@@ -207,5 +204,15 @@ class Cart(models.Model):
         total_netto = float(self.batch.netto) * self.quantity
         result = round(total_netto * (1 + float(self.batch.get_vat_display())), 2)
         return result
-        
+
+
+class CalendarSupervisor(models.Model):
+    owner = models.ForeignKey(Employee, verbose_name='Właściciel', on_delete=models.PROTECT, related_name="calendar_supervisor")
+    date = models.DateField(verbose_name='Data spotkania', )
+    employee = models.ForeignKey(Employee, null=True, verbose_name="Podopieczny", on_delete=models.PROTECT)
+    note = models.TextField(verbose_name="Notatka")
     
+    
+    def __str__(self):
+        year, month, day = (int(x) for x in self.date.split('-'))
+        return f'Data: {self.date}, {date(year=year, month=month, day=day).weekday()}'
