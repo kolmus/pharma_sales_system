@@ -1,7 +1,6 @@
 from typing_extensions import Required
 from django import forms
 from django.forms.widgets import PasswordInput
-from .views import request
 from .models import UNITS, Batch, Client, Employee, Product, Variant
 
 

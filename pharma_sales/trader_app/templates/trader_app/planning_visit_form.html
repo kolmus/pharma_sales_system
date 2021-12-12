@@ -1,0 +1,27 @@
+{% extends 'trader_app/base.html' %}
+{% block content %}
+    {{ message }}
+    <ul>
+        <ol>
+            {% for visit in visits %}
+            <li>
+                {{visit.client_branch}}
+                <form method="post" action="visit.id/delete/">
+                    <button type="submit">Usuń vizytę</button>
+                </form>
+            </li>
+            {% empty %}
+            Nie masz firm na liście
+            {% endfor %}
+        </ol>
+    </ul>
+    <form method="post">
+        <fieldset>
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Dodaj">
+        </fieldset>
+    </form>
+    <a href="/traders/"><button type="button">Powrót</button></a>
+    <a href="/traders/planning/"><button type="button">Inny dzień</button></a>
+{% endblock %}

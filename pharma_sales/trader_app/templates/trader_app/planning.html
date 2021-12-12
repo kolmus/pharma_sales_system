@@ -1,0 +1,10 @@
+{% extends 'trader_app/base.html' %}
+{% block content %}
+    <form method="post">
+        <fieldset>
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Dalej">
+        </fieldset>
+    </form>
+{% endblock %}

@@ -45,14 +45,19 @@ from manager_app.views import (
     OrderListView,
     OrderCSModifyView,
     OrderDeleteView,
+    
+    
 )
 
 from trader_app.views import (
     TraderLoginView, 
     TraderLogoutView, 
     TraderDashboardView,
+    TraderPlaningVisitsView,
     TraderStartDayView,
-    TraderPlaningView,
+    TraderPlaningDateView,
+    
+    
 )
 
 
@@ -90,8 +95,9 @@ urlpatterns = [
     path('trader/login/', TraderLoginView.as_view()),
     path('trader/logout/', TraderLogoutView.as_view()),
     path('trader/', TraderDashboardView.as_view()),
-    path('trader/today.html', TraderStartDayView.as_view()),
-    path('trader/planning')
+    path('trader/today/', TraderStartDayView.as_view()),
+    path('trader/planning/', TraderPlaningDateView.as_view()),
+    path('trader/planning/<str:plan_date>/<str:city>/', TraderPlaningVisitsView.as_view())
     
 ]
 
