@@ -47,6 +47,8 @@ from manager_app.views import (
     OrderDeleteView,
 )
 
+from trader_app.views import TraderLoginView, TraderLogoutView, TraderDashboardView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -75,7 +77,16 @@ urlpatterns = [
     path('branch/<int:branch_id>/orders/<int:order_id>/status/<int:status_value>/', OrderStatusUpdateView.as_view()),
     path('orders/', OrderListView.as_view()),
     path('orders/<int:pk>/cs/', OrderCSModifyView.as_view()),
-    path('orders/<int:order_id>/delete/', OrderDeleteView.as_view())
+    path('orders/<int:order_id>/delete/', OrderDeleteView.as_view()),
+    
+    
+    ### trader_app urls:
+    path('trader/login/', TraderLoginView.as_view()),
+    path('trader/logout/', TraderLogoutView.as_view()),
+    path('trader/', TraderDashboardView.as_view()),
+    
+    
+    
 ]
 
 if settings.DEBUG:
