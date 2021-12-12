@@ -148,5 +148,10 @@ class TraderPlaningVisitsView(LoginRequiredMixin, PermissionRequiredMixin, View)
                 'message': message,
             })
             
-
+class TraderVisitDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = 'trader_app.add_visit' ## to change
+    
+    def post(self, request, visit_id, visit_date, visit_city):
+        Visit.objects.get(id=visit_id).delete()
+        return redirect(f'/trader/planning/{visit_date}/{visit_city}/')
 

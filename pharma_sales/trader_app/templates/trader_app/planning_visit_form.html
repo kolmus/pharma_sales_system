@@ -1,13 +1,14 @@
 {% extends 'trader_app/base.html' %}
 {% block content %}
-    {{ message }}
+    <h3>{{ message }}</h3>
     <ul>
         <ol>
             {% for visit in visits %}
             <li>
                 {{visit.client_branch}}
-                <form method="post" action="visit.id/delete/">
-                    <button type="submit">Usuń vizytę</button>
+                <form method="post" action="{{visit.id}}/delete/">
+                    {% csrf_token %}
+                    <button type="submit">Usuń wizytę</button>
                 </form>
             </li>
             {% empty %}
@@ -22,6 +23,6 @@
             <input type="submit" value="Dodaj">
         </fieldset>
     </form>
-    <a href="/traders/"><button type="button">Powrót</button></a>
-    <a href="/traders/planning/"><button type="button">Inny dzień</button></a>
+    <a href="/trader/"><button type="button">Powrót</button></a>
+    <a href="/trader/planning/"><button type="button">Inny dzień</button></a>
 {% endblock %}
