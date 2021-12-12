@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'manager_app'
+    'manager_app',
+    'trader_app',
 ]
 
 # MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')

@@ -49,16 +49,26 @@ WEEKDAY = (
     (SUNDAY, 'Niedziela')
 )
 
+CREATING_ST = 0
+TO_VERIFY_ST = 1
+WAIT_FOR_PAY_ST = 2
+ACCEPTED_ST = 3
+TO_DELIVER_ST = 4
+PROBLEM_ST = 5
+IN_DELIVERY_ST = 6
+NOT_PAYED_ST = 7
+ENDED_ST = 8
+
 ORDER_STATUS = (
-    (0, 'Zamówienie w trakcie tworzenia.'),
-    (1, 'Zamówienie przyjęte, oczekuje na weryfikację.'),
-    (2, 'Zamówienie oczekuje na płatność'),
-    (3, 'Potwierdzono zamówienie, przekazano do realizacji.'),
-    (4, 'Skompletowane, oczekuje na kuriera.'),
-    (5, 'Problem z zamówniem. Konieczność wyjaśnienia.'),
-    (6, 'Przekazano kurierowi.'),
-    (7, 'Oczekiwanie na płatność'),
-    (8, 'Zakończone.')
+    (CREATING_ST, 'Zamówienie w trakcie tworzenia.'),
+    (TO_VERIFY_ST, 'Zamówienie przyjęte, oczekuje na weryfikację.'),
+    (WAIT_FOR_PAY_ST, 'Zamówienie oczekuje na płatność'),
+    (ACCEPTED_ST, 'Potwierdzono zamówienie, przekazano do realizacji.'),
+    (TO_DELIVER_ST, 'Skompletowane, oczekuje na kuriera.'),
+    (PROBLEM_ST, 'Problem z zamówniem. Konieczność wyjaśnienia.'),
+    (IN_DELIVERY_ST, 'Przekazano kurierowi.'),
+    (NOT_PAYED_ST, 'Oczekiwanie na płatność'),
+    (ENDED_ST, 'Zakończone.')
 )
 
 class Employee(models.Model):

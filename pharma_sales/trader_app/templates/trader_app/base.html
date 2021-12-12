@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/kimeiga/bahunya/css/bahunya-0.1.3.css"/>
+    <script src="/static/scripts/script.js"></script>
+    <script src="/static/scripts/script_dashboard.js"></script>
+    <title>Pharma Sales</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>
+                <a href="/"><img src="/static/logo.png"></a>
+            </h1>
+            {% if user.is_authenticated %}
+                <h1 id="user">Witaj {{user}}</h1>
+            {% else %}
+                <h1 id="user">Witaj nieznajomy</h1>
+            {% endif %}
+            <input type="checkbox" id="menu-toggle">
+            <label for="menu-toggle">&#9776;</label>
+            <a href="/trader/pipeline/">Twóje wyniki</a>
+            <a href="/trader/clients/">Klienci</a>
+            <a href="/trader/products/">Produkty</a>
+            <a href="/trader/orders/">Zamówienia</a>
+            <a href="/trader/logout/">Wyloguj</a>
+        </nav>
+    </header>
+        
+        {% block content %}{% endblock %}
+        
+        <footer>
+            Created by Łukasz Kolmus
+        </footer>
+</body>
+</html>
