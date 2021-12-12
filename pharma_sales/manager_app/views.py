@@ -51,7 +51,7 @@ class LogoutView(View):
 
 class DashboardView(LoginRequiredMixin, View):
     """
-    Dashbord View - calendar of supervisor, monthly statistics of team.
+    Dashbord View - supervisors clendar.
     Login required.
     """
     def get(self, request):
@@ -73,15 +73,15 @@ class DashboardView(LoginRequiredMixin, View):
             year, month, day = (int(x) for x in str(correct_date).split('-'))
             final_date = f'{year}-{month}-{day} {WEEKDAY[correct_date.weekday()][1]}'
             
-            if CalendarSupervisor.objects.filter(owner=request.user.employee, date=correct_date).exists():
-                meeting = CalendarSupervisor.objects.get(owner=request.user.employee, date=correct_date)
+            if CalendarSupervisor.objects.filter(owner=request.user.employee, meeting_date=correct_date).exists():
+                meeting = CalendarSupervisor.objects.get(owner=request.user.employee, meeting_date=correct_date)
                 form = CalendarForm(initial={
                     'note': meeting.note,
                     'employee': meeting.employee 
                 })
             else:
                 form = CalendarForm()
-                form.fields['employee'].queryset = team
+            form.fields['employee'].queryset = team
             last_week[final_date] = form
         
         
@@ -91,15 +91,15 @@ class DashboardView(LoginRequiredMixin, View):
             year, month, day = (int(x) for x in str(correct_date).split('-'))
             final_date = f'{year}-{month}-{day} {WEEKDAY[correct_date.weekday()][1]}'
             
-            if CalendarSupervisor.objects.filter(owner=request.user.employee, date=correct_date).exists():
-                meeting = CalendarSupervisor.objects.get(owner=request.user.employee, date=correct_date)
+            if CalendarSupervisor.objects.filter(owner=request.user.employee, meeting_date=correct_date).exists():
+                meeting = CalendarSupervisor.objects.get(owner=request.user.employee, meeting_date=correct_date)
                 form = CalendarForm(initial={
                     'note': meeting.note,
                     'employee': meeting.employee 
                 })
             else:
                 form = CalendarForm()
-                form.fields['employee'].queryset = team
+            form.fields['employee'].queryset = team
             this_week[final_date] = form
         
         
@@ -110,21 +110,21 @@ class DashboardView(LoginRequiredMixin, View):
             year, month, day = (int(x) for x in str(correct_date).split('-'))
             final_date = f'{year}-{month}-{day} {WEEKDAY[correct_date.weekday()][1]}'
             
-            if CalendarSupervisor.objects.filter(owner=request.user.employee, date=correct_date).exists():
-                meeting = CalendarSupervisor.objects.get(owner=request.user.employee, date=correct_date)
+            if CalendarSupervisor.objects.filter(owner=request.user.employee, meeting_date=correct_date).exists():
+                meeting = CalendarSupervisor.objects.get(owner=request.user.employee, meeting_date=correct_date)
                 form = CalendarForm(initial={
                     'note': meeting.note,
                     'employee': meeting.employee 
                 })
+                form.fields['employee'].queryset = team
             else:
                 form = CalendarForm()
-                form.fields['employee'].queryset = team
+            form.fields['employee'].queryset = team
             next_week[final_date] = form
-        
         return render(request, 'manager_app/dashboard.html', {
             'last_week': last_week,
             'this_week': this_week,
-            'next_week': next_week,
+            'next_week': next_week
         })
         
     def post(self, request):
@@ -133,18 +133,18 @@ class DashboardView(LoginRequiredMixin, View):
         form.fields['employee'].queryset = team
         print(30*'########')
         date_post = request.POST['date_cal']
-        date = date_post.split(' ')[0]
+        date_correct = date_post.split(' ')[0]
         if form.is_valid():
             print(request.user.employee)
             meeting = CalendarSupervisor()
             meeting.owner = request.user.employee
-            meeting.date = date
+            meeting.meeting_date = date_correct
             meeting.employee = form.cleaned_data['employee']
             meeting.note = form.cleaned_data['note']
             meeting.save()
             print(meeting)
         
-        return redirect('/orders/')
+        return redirect('/')
         
 
 class EmployeeView(LoginRequiredMixin, View):

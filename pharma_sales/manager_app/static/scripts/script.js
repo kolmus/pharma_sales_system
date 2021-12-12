@@ -2,7 +2,7 @@
 //Available on '/branch/add/' and on '/branch/edit/<id>/'
 
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("DOM fully loaded and parsed!");
+    
     document.querySelector('#user').style.color = "black"
 
     const reg = /\/branch\/edit\/\d+\//;

@@ -1,8 +1,13 @@
 {% extends 'manager_app/base.html' %}
 {% block content %}
-<div class="calendar-position">
+<div id="calendar-nav">
+    <button type="button" id="last-week-button">Zeszły tydzień</button>
+    <button type="button" id="this-week-button">Obecny tydzień</button>
+    <button type="button" id="next-week-button">Przyszły tydzień</button>
+</div>
+<div class="calendar-position last-week">
     {% for date, form in last_week.items %}
-        <div class="calendar-element">
+        <div class="calendar-element" data-ldate="{{date}}">
             {{date}}
             <form method="post">
                 {% csrf_token %}
@@ -13,96 +18,31 @@
         </div>
     {% endfor %}
 </div>
-<div class="calendar-position">
-    {% for date, form in this_week.items %}
-        <div class="calendar-element">
-            {{date}}
+<div class="calendar-position this-week">
+    {% for tdate, tform in this_week.items %}
+        <div class="calendar-element" data-tdate="{{tdate}}">
+            {{tdate}}
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <input type="hidden" name="date_cal" value="{{date}}">
+                {{ tform.as_p }}
+                <input type="hidden" name="date_cal" value="{{tdate}}">
                 <input type="submit" value="Zapisz">
             </form>
         </div>
     {% endfor %}
 </div>
-<div class="calendar-position">
-    {% for date, form in next_week.items %}
-        <div class="calendar-element">
-            {{date}}
+<div class="calendar-position next-week">
+    {% for ndate, nform in next_week.items %}
+        <div class="calendar-element" data-ndate="{{ndate}}">
+            {{ndate}}
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <input type="hidden" name="date_cal" value="{{date}}">
+                {{ nform.as_p }}
+                <input type="hidden" name="date_cal" value="{{ndate}}">
                 <input type="submit" value="Zapisz">
             </form>
         </div>
     {% endfor %}
 </div>
 
-
-
-    <!-- <table>
-        <thead>
-            {%for date, form in last_week.items %}
-                <th>{{ date }}</th>
-            {% endfor %}
-        </thead>
-        <tbody>
-            <tr>
-                {% for date, form in last_week.items %}
-                    <td>
-                        <form method="post">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <input type="hidden" name="date_cal" value="{{date}}">
-                            <input type="submit" value="Zapisz">
-                        </form>
-                    </td>
-                {% endfor %}
-            </tr>
-        </tbody>
-    </table>
-    <table>
-        <thead>
-            {%for date, form in this_week.items %}
-                <th>{{ date }}</th>
-            {% endfor %}
-        </thead>
-        <tbody>
-            <tr>
-                {% for date, form in this_week.items %}
-                    <td>
-                        <form method="post">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <input type="hidden" name="date_cal" value="{{date}}">
-                            <input type="submit" value="Zapisz">
-                        </form>
-                    </td>
-                {% endfor %}
-            </tr>
-        </tbody>
-    </table>
-    <table>
-        <thead>
-            {%for date, form in next_week.items %}
-                <th>{{ date }}</th>
-            {% endfor %}
-        </thead>
-        <tbody>
-            <tr>
-                {% for date, form in next_week.items %}
-                    <td>
-                        <form method="post">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <input type="hidden" name="date_cal" value="{{date}}">
-                            <input type="submit" value="Zapisz">
-                        </form>
-                    </td>
-                {% endfor %}
-            </tr>
-        </tbody>
-    </table> -->
 {% endblock %}

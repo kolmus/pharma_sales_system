@@ -222,11 +222,10 @@ class Cart(models.Model):
 
 class CalendarSupervisor(models.Model):
     owner = models.ForeignKey(Employee, verbose_name='Właściciel', on_delete=models.PROTECT, related_name="calendar_supervisor")
-    date = models.DateField(verbose_name='Data spotkania', )
+    meeting_date = models.DateField(verbose_name='Data spotkania', )
     employee = models.ForeignKey(Employee, null=True, verbose_name="Podopieczny", on_delete=models.PROTECT)
     note = models.TextField(verbose_name="Notatka")
     
     
     def __str__(self):
-        year, month, day = (int(x) for x in self.date.split('-'))
-        return f'Data: {self.date}, {date(year=year, month=month, day=day).weekday()}'
+        return f'Data: {self.meeting_date}'
