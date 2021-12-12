@@ -47,7 +47,13 @@ from manager_app.views import (
     OrderDeleteView,
 )
 
-from trader_app.views import TraderLoginView, TraderLogoutView, TraderDashboardView
+from trader_app.views import (
+    TraderLoginView, 
+    TraderLogoutView, 
+    TraderDashboardView,
+    TraderStartDayView,
+    TraderPlaningView,
+)
 
 
 urlpatterns = [
@@ -84,8 +90,8 @@ urlpatterns = [
     path('trader/login/', TraderLoginView.as_view()),
     path('trader/logout/', TraderLogoutView.as_view()),
     path('trader/', TraderDashboardView.as_view()),
-    
-    
+    path('trader/today.html', TraderStartDayView.as_view()),
+    path('trader/planning')
     
 ]
 

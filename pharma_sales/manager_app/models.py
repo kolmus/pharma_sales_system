@@ -90,6 +90,7 @@ class Employee(models.Model):
 class Client(models.Model):
     nip = models.IntegerField(verbose_name='NIP')
     company_name = models.CharField(max_length=128, verbose_name='Nazwa firmy')
+    short_company_name = models.CharField(max_length=16, verbose_name='Skrócona nazwa', null=True)
     logo = models.ImageField(upload_to='media/img/client/logo/', null=True)
     regon = models.IntegerField(verbose_name="REGON")
     krs = models.IntegerField(verbose_name="Numer KRS", null=True)
@@ -206,13 +207,7 @@ class Order(models.Model):
         return result
 
 
-class Visit(models.Model):
-    date = models.DateTimeField(verbose_name='Data wizyty', auto_now_add=True)
-    visited = models.BooleanField(verbose_name='Wizyta wykonana', default=False)
-    proof_img = models.ImageField(upload_to='static/img/client/visits/', verbose_name='Zdjęcie apteki')
-    trader = models.ForeignKey(Employee, on_delete=models.PROTECT ,verbose_name="Handlowiec")
-    client_branch = models.ForeignKey(Branch, on_delete=models.PROTECT, verbose_name="Klient")
-    note = models.TextField(verbose_name="Notatka handlowca")
+
 
 
 class Cart(models.Model):

@@ -3,9 +3,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views import View
+from datetime import date
 
 from manager_app.models import Employee, User, Branch, Order, Cart, Batch, Variant, Product, Client
 from manager_app.forms import LoginForm
+from .models import Visit
 
 
 
@@ -44,10 +46,38 @@ class TraderLogoutView(LoginRequiredMixin, View):
         return redirect("/trader/login/")
     
     
-class TraderDashboardView(LoginRequiredMixin, View):
+class TraderDashboardView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for dashboard page
     """
+    permission_required = 'auth.add_user' ## to change
+    
     def get(self, request):
         return render(request, 'trader_app/dashboard.html')
     
+class TraderStartDayView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """
+    View starts day of work
+    """
+    permission_required = 'auth.add_user' ## to change
+    
+    def get(self, request):
+        visits = Visit.objects.filter(date=date.today())
+        print(visits)
+        resp = render (request, 'trader_app/today.html')
+        return resp
+
+class TraderPlaningView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """
+    View helps to plan all day = needs 12 position to access save
+    """
+    permission_required = 'auth.add_user' ## to change
+    
+    def get(self, request):
+        clients = Branch.objects.filter(account_manager=request.user.employee)
+        return render(request, 'trader_app/planning.html', {'clients': clients})
+    
+    def post(self, request):
+        clients = Branch.objects.filter(account_manager=request.user.employee)
+        return render(request, 'trader_app/planning.html', {'clients': clients})
+

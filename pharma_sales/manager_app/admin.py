@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Employee, Client, Branch, Product, Variant, Batch, Invoice, Order, Visit
+from .models import Employee, Client, Branch, Product, Variant, Batch, Invoice, Order, CalendarSupervisor, Cart
+from trader_app.models import Visit
 
 def not_active(model_admin, request, query_set):
     query_set.update(is_active=False)
@@ -86,6 +87,16 @@ class VisitAdmin(admin.ModelAdmin):
     list_display = ('date', 'visited', 'proof_img', 'trader', 'client_branch', 'note')
 
 
+@admin.register(CalendarSupervisor)
+class CalendarSupervisorAdmin(admin.ModelAdmin):
+    list_display = ('owner', 'meeting_date', 'employee', 'note')
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('order', 'batch', 'quantity')
+    
+    
 # @admin.register(Location)
 # class LocationAdmin(admin.ModelAdmin):
 #     list_display = ()
