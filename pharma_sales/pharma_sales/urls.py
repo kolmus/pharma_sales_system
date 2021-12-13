@@ -58,7 +58,8 @@ from trader_app.views import (
     TraderPlaningDateView,
     TraderVisitDeleteView,
     TraderVisitView,
-    
+    TraderProductsView,
+    TraderProductDetailsView
     
 )
 
@@ -102,6 +103,8 @@ urlpatterns = [
     path('trader/planning/<str:plan_date>/<str:city>/', TraderPlaningVisitsView.as_view()),
     path('trader/planning/<str:visit_date>/<str:visit_city>/<int:visit_id>/delete/', TraderVisitDeleteView.as_view()),
     path('trader/visit/<int:visit_id>/', TraderVisitView.as_view()),
+    path('trader/visit/<int:visit_id>/products/', TraderProductsView.as_view()),
+    path('trader/visit/<int:visit_id>/products/<int:product_id>/', TraderProductDetailsView.as_view()),
     
     
 ]

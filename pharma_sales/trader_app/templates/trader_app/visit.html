@@ -1,7 +1,7 @@
 {% extends 'trader_app/base.html' %}
 {% block content %}
-<a href="/trader/visit/leaflets/"><button class="btn btn-leaflets" type="button">Ulotki</button></a>
-<a href="/trader/visit/order/add"><button class="btn btn-add" type="button">Zamówienie</button></a>
+<a href="/trader/visit/{{visit.id}}/products/"><button class="btn btn-leaflets" type="button">Ulotki</button></a>
+<a href="/trader/visit/{{visit.id}}/order/add"><button class="btn btn-add" type="button">Zamówienie</button></a>
 <!-- <a href="/trader/visit//photo"><button class="btn btn-photo" type="button">Zrób zdjęcie</button></a> -->
 <form enctype="multipart/form-data" method="post">
     <fieldset>

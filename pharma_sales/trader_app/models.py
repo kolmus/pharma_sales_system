@@ -13,10 +13,12 @@ class Visit(models.Model):
     def __str__(self):
         return f'{self.client_branch.name_of_branch} - {self.date}'
 
-# class Localization(models.Model):
-#     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-#     date = models.DateField(auto_now=True)
-#     time = models.TimeField(auto_now=True)
-    # latitude = models.FloatField()
-    # longitude = models.FloatField()
+
+class Localization(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    date = models.DateField(auto_now=True)
+    time = models.TimeField(auto_now=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    note = models.CharField(max_length=128)
     

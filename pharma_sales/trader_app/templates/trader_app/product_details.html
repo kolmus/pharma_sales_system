@@ -1,0 +1,16 @@
+{% extends 'trader_app/base.html' %}
+{% block content %}
+    <h2>{{product.name}}</h2>
+    <h3>{{product.active_substance}}</h3>
+    <dl>
+        {% for variant in product.variant_set.all %}
+        <dt>{{variant.dose}} {{variant.get_unit_display}}</dt>
+            <dd>Pakowane po {{variant.in_package}} szt</dd>
+        {% endfor %}
+    </dl>
+
+    <h3>Opis:</h3>
+    {{product.variant_set.all.0}}
+    {{product.variant_set.all.0.photo_main}}
+    {{product.description}}
+    {% endblock %}

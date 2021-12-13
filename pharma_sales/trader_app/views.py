@@ -7,18 +7,25 @@ from datetime import date
 
 from manager_app.models import Employee, User, Branch, Order, Cart, Batch, Variant, Product, Client
 from manager_app.forms import LoginForm
-from .models import Visit
+from .models import Visit, Localization
 from .forms import PlanDateForm, PlanAddVisitForm, MakeVisitForm
 
 
-def save_coordinates(request):
+def save_coordinates(request, note):
+    """function saves gps coordinates in Localization motel
+
+    Args:
+        request (object): from View 
+        note (str): note about reason of save location
+    """    
     print(request.COOKIES['long'])
     print(request.COOKIES['lat'])
-    # Localization.objects.create(
-    #     latitude = float(request.COOKIES['lat']),
-    #     longitude = float(request.COOKIES['lon']),
-    #     Employee = request.user.Employee
-    # )
+    Localization.objects.create(
+        latitude = float(request.COOKIES['lat']),
+        longitude = float(request.COOKIES['long']),
+        employee = request.user.employee,
+        note = note
+    )
 
 class TraderLoginView(View):
     """View created for login page
@@ -72,6 +79,8 @@ class TraderStartDayView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'trader_app.add_visit' ## to change
     
     def get(self, request):
+        save_coordinates(request, 'Otwarty plan dnia')
+        
         visits = Visit.objects.filter(date=date.today(), trader=request.user.employee)
         resp = render (request, 'trader_app/start_day.html', {'visits': visits})
         
@@ -104,7 +113,7 @@ class TraderPlaningVisitsView(LoginRequiredMixin, PermissionRequiredMixin, View)
     permission_required = 'trader_app.add_visit' ## to change
     
     def get(self, request, plan_date, city):
-        visits = Visit.objects.filter(date=plan_date)
+        visits = Visit.objects.filter(date=plan_date, visited=False)
         form = PlanAddVisitForm()
         form.fields['branch'].queryset = Branch.objects.filter(account_manager=request.user.employee, city=city)
         if len(visits) < 12:
@@ -172,7 +181,8 @@ class TraderVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
     
     def get(self, request, visit_id):
         #Lokaliztion
-        save_coordinates(request)
+        save_coordinates(request, 'Wejście w wizytę')
+        
         visit = Visit.objects.get(id=visit_id)
         if visit.note or visit.proof_img:
             form = MakeVisitForm(initial={
@@ -181,17 +191,42 @@ class TraderVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
             })
         else:
             form = MakeVisitForm()
-        return render(request, 'trader_app/visit.html', {'form': form})
+        return render(request, 'trader_app/visit.html', {'form': form, 'visit': visit})
     
     def post(self, request, visit_id):
         form = MakeVisitForm (request.POST)
+        visit = Visit.objects.get(id=visit_id)
         if form.is_valid():
-            visit = Visit.objects.get(id=visit_id)
             visit.proof_img = form.cleaned_data['proof_img']
             visit.note = form.cleaned_data['note']
             visit.save()
-            return render(request, 'trader_app/visit.html', {'form': form})
-        else: return render(request, 'trader_app/visit.html', {'form': form})
+            return render(request, 'trader_app/visit.html', {'form': form, 'visit': visit})
+        else: 
+            return render(request, 'trader_app/visit.html', {'form': form, 'visit': visit})
 
 
+class TraderProductsView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """
+    View to show Products list
+    """
+    permission_required = 'trader_app.add_visit' ## to change
+    
+    def get(self, request, visit_id):
+        products = Product.objects.filter(is_active=True)
+        
+        return render(request, 'trader_app/products.html', {'products': products, 'visit_id': visit_id})
 
+class TraderProductDetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """
+    View to show details 
+    """
+    permission_required = 'trader_app.add_visit' ## to change
+    
+    def get(self, request, visit_id, product_id):
+        save_coordinates(request, 'Wejście w szczeguły produktu')
+        
+        product = Product.objects.get(id=product_id)
+        print(product.variant_set.all())
+        return render(request, 'trader_app/product_details.html', {'product': product, 'visit_id': visit_id})
+    
+    

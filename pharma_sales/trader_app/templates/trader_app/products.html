@@ -1,0 +1,9 @@
+{% extends 'trader_app/base.html' %}
+{% block content %}
+    {% for product in products %}
+        <a href="/trader/visit/{{ visit_id }}/products/{{ product.id }}/">
+            <button type="button" class="btn-list">{{ product.name }}</button>
+        </a>
+    {% endfor %}
+    <a href="/trader/visit/{{wisit.id}}/"><button type="button">Powrót do wizyty</button></a>
+{% endblock %}

@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // }
 
 
-    if (window.location.pathname == '/trader/start_day/') {
+    if (window.location.pathname == '/trader/') {
 
         console.log('działa w gpstracking');
         navigator.geolocation.getCurrentPosition(data => {
