@@ -1,5 +1,6 @@
 {% extends 'trader_app/base.html' %}
 {% block content %}
+<a href="/trader/visit/{{visit_id}}/"><button type="button">Powrót do wizyty</button></a>
     <h2>{{product.name}}</h2>
     <h3>{{product.active_substance}}</h3>
     <dl>
@@ -13,4 +14,5 @@
     {{product.variant_set.all.0}}
     {{product.variant_set.all.0.photo_main}}
     {{product.description}}
+    <a href="/trader/visit/{{visit_id}}/"><button type="button">Powrót do wizyty</button></a>
     {% endblock %}

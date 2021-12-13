@@ -50,16 +50,23 @@ from manager_app.views import (
 )
 
 from trader_app.views import (
+    TraderCartModifyView,
     TraderLoginView, 
     TraderLogoutView, 
     TraderDashboardView,
+    TraderOrderCartCreateView,
     TraderPlaningVisitsView,
     TraderStartDayView,
     TraderPlaningDateView,
     TraderVisitDeleteView,
     TraderVisitView,
     TraderProductsView,
-    TraderProductDetailsView
+    TraderProductDetailsView,
+    TraderCartModifyView,
+    TraderCartDeleteView,
+    TraderOrderStatusUpdateView,
+    TraderEndVisitView,
+    
     
 )
 
@@ -105,7 +112,11 @@ urlpatterns = [
     path('trader/visit/<int:visit_id>/', TraderVisitView.as_view()),
     path('trader/visit/<int:visit_id>/products/', TraderProductsView.as_view()),
     path('trader/visit/<int:visit_id>/products/<int:product_id>/', TraderProductDetailsView.as_view()),
-    
+    path('trader/visit/<int:visit_id>/<int:branch_id>/order/add/', TraderOrderCartCreateView.as_view()),
+    path('trader/visit/<int:visit_id>/<int:branch_id>/orders/<int:order_id>/', TraderCartModifyView.as_view()),
+    path('trader/visit/<int:visit_id>/<int:order_id>/delete/<int:position_id>/', TraderCartDeleteView.as_view()),
+    path('trader/visit/<int:visit_id>/<int:branch_id>/orders/<int:order_id>/status/<int:status_value>/', TraderOrderStatusUpdateView.as_view()),
+    path('trader/visit/<int:visit_id>/visited/', TraderEndVisitView.as_view()),
     
 ]
 

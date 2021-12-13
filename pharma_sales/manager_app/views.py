@@ -67,6 +67,7 @@ class DashboardView(LoginRequiredMixin, View):
         
         
         last_week_monday = last_monday - timedelta(days = 7)
+        
         last_week = {}
         for i in range(days_in_calendar):
             correct_date = last_week_monday + timedelta(days = i)
@@ -131,19 +132,21 @@ class DashboardView(LoginRequiredMixin, View):
         team = Employee.objects.filter(supervisor = request.user.employee, is_active = True)
         form = CalendarForm(request.POST)
         form.fields['employee'].queryset = team
-        print(30*'########')
         date_post = request.POST['date_cal']
         date_correct = date_post.split(' ')[0]
         if form.is_valid():
-            print(request.user.employee)
-            meeting = CalendarSupervisor()
-            meeting.owner = request.user.employee
-            meeting.meeting_date = date_correct
-            meeting.employee = form.cleaned_data['employee']
-            meeting.note = form.cleaned_data['note']
-            meeting.save()
-            print(meeting)
-        
+            if CalendarSupervisor.objects.filter(meeting_date = date_correct, owner = request.user.employee).exists():
+                meeting = CalendarSupervisor.objects.filter(meeting_date = date_correct, owner = request.user.employee)[0]
+                meeting.employee = form.cleaned_data['employee']
+                meeting.note = form.cleaned_data['note']
+                meeting.save()
+            else: 
+                meeting = CalendarSupervisor()
+                meeting.owner = request.user.employee
+                meeting.meeting_date = date_correct
+                meeting.employee = form.cleaned_data['employee']
+                meeting.note = form.cleaned_data['note']
+                meeting.save()
         return redirect('/')
         
 
@@ -486,7 +489,7 @@ class OrderCartCreateView(LoginRequiredMixin, View):
                 branch.id,
                 today.year,
                 today.month,
-                len(Order.objects.filter(branch=branch, date__year__gte=int(today.year), date__month__gte=int(today.month)))+1
+                len(Order.objects.filter(branch=branch, date__year__gte=int(today.year), date__month__gte=int(today.month)))+1  # to change for something more uniq
             )
             order = Order.objects.create(
                 order_number=order_number,
@@ -557,8 +560,9 @@ class CartDeleteView(LoginRequiredMixin, View):
     """
     View remove positiom from Cart
     """
-    def get(self, request, branch_id, order_id, position_id):
+    def post(self, request, order_id, position_id):
         position = Cart.objects.get(id=position_id)
+        branch_id = position.order.branch.id
         position.delete()
         
         return redirect(f'/branch/{branch_id}/orders/{order_id}/')

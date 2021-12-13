@@ -5,7 +5,7 @@
     {% for employee in traders %}
         <h2>{{ employee }}</h2>
             {% for branch in employee.branch_set.all %}
-                <a href="/clients/{{branch.client.id}}/"> {{branch }}</a> <a href="/branch/edit/{{branch.id}}/"><button>Edytuj oddział</button></a>
+                <a href="/clients/{{branch.client.id}}/"> {{branch }}</a> <a href="/branch/edit/{{branch.id}}/"><button>Edytuj oddział</button></a> <a href="/branch/{{branch.id}}/orders/add/"><button type="button">Dodaj zamówienie</button></a>
             {% endfor %}
     {% endfor %}
 {% endblock %}

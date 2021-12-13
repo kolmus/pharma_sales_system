@@ -1,4 +1,4 @@
-{% extends 'manager_app/base.html' %}
+{% extends 'trader_app/base.html' %}
 {% block content %}
     <h3>{{title}}</h3>
         {% if positions %}
@@ -21,15 +21,20 @@
                     <td>{{position.total_netto}}zł</td>
                     <td>{{position.total_brutto}}zł</td>
                     <td>
-                        <form action="/orders/{{order.id}}/delete/{{position.id}}/" method="post">
+                        <form action="/trader/visit/{{visit_id}}/{{order.id}}/delete/{{position.id}}/" method="post">
                             {% csrf_token %}
                             <button type="submit">Usuń</button>
-                        </form></td>
+                        </form>
+                    </td>
                 </tr>
                 
                 {% endfor %}
             </tbody>
-            <h4>Razem: {{order.total_netto}}zł netto</h4> <a href="/branch/{{order.branch.id}}/orders/{{order.id}}/status/1/"><button type="button">Przyjmij zamówienie</button></a>
+             <form action="/trader/visit/{{visit_id}}/{{order.branch.id}}/orders/{{order.id}}/status/1/" method='post'>
+                {% csrf_token %} 
+                <h4>Razem: {{order.total_netto}}zł netto</h4>
+                 <button type="submit">Przyjmij zamówienie</button>
+            </form>
         </table>
         {% else %}
         Brak pozycji w zamówieniu
@@ -42,4 +47,5 @@
             <input type="submit" value="Dodaj do zamówienia">
         </fieldset>
     </form>
+    <a href="/trader/visit/{{visit_id}}/"><button type="button">Powrót do wizyty</button></a>
 {% endblock %}
