@@ -1,0 +1,7 @@
+{% extends 'trader_app/base.html' %}
+{% block content %}
+    {{ message }}
+    {% for visit in visits %}
+        <a href="/trader/visit/{{visit.id}}/"><button class="gps-track" type="button">{{ visit.client_branch.name_of_branch }}</button></a>
+    {% endfor %}
+{% endblock %}

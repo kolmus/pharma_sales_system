@@ -7,13 +7,14 @@
     <link rel="stylesheet" href="https://cdn.rawgit.com/kimeiga/bahunya/css/bahunya-0.1.3.css"/>
     <script src="/static/scripts/dashboard.js"></script>
     <script src="/static/scripts/script.js"></script>
+    <script src="/static/scripts/gps-tracking.js"></script>
     <title>Pharma Sales</title>
 </head>
 <body>
     <header>
         <nav>
             <h1>
-                <a href="/"><img src="/static/logo.png"></a>
+                <a href="/trader/"><img src="/static/logo.png"></a>
             </h1>
             {% if user.is_authenticated %}
                 <h1 id="user">Witaj {{user}}</h1>
