@@ -66,6 +66,7 @@ from trader_app.views import (
     TraderCartDeleteView,
     TraderOrderStatusUpdateView,
     TraderEndVisitView,
+    TraderClientAdd,
     
     
 )
@@ -117,6 +118,8 @@ urlpatterns = [
     path('trader/visit/<int:visit_id>/<int:order_id>/delete/<int:position_id>/', TraderCartDeleteView.as_view()),
     path('trader/visit/<int:visit_id>/<int:branch_id>/orders/<int:order_id>/status/<int:status_value>/', TraderOrderStatusUpdateView.as_view()),
     path('trader/visit/<int:visit_id>/visited/', TraderEndVisitView.as_view()),
+    path('trader/client/add/', TraderClientAdd.as_view()),
+    
     
 ]
 

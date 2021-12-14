@@ -1,4 +1,3 @@
-from typing import ValuesView
 from django.db.models import fields
 from django.http import request
 from django.shortcuts import render, redirect
@@ -611,4 +610,5 @@ class OrderCSModifyView(LoginRequiredMixin, UpdateView):
     model = Order
     fields = ['order_number', 'branch', 'invoice', 'discount']
     success_url = '/orders/'
+
 

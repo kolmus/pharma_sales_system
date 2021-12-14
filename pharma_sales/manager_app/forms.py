@@ -1,6 +1,4 @@
-from typing_extensions import Required
 from django import forms
-from django.forms.widgets import PasswordInput
 from .models import UNITS, Batch, Client, Employee, Product, Variant
 
 
@@ -10,6 +8,7 @@ class LoginForm(forms.Form):
     """    
     login = forms.CharField(label='Login')
     password = forms.CharField(label='Hasło', widget=forms.PasswordInput)
+
 
 class EmployeeAddForm (forms.Form):
     first_name = forms.CharField(label='Imię')
@@ -99,3 +98,5 @@ class CartForm(forms.Form):
 class CalendarForm(forms.Form):
     employee = forms.ModelChoiceField(queryset=None, label=False, required=False)
     note = forms.CharField(label=False, widget=forms.Textarea(attrs={'placeholder': 'Notatka z dnia'}), required=False)
+    
+

@@ -8,7 +8,7 @@ from datetime import date
 from manager_app.models import Employee, User, Branch, Order, Cart, Batch, Variant, Product, Client
 from manager_app.forms import LoginForm, CartForm
 from .models import Visit, Localization
-from .forms import PlanDateForm, PlanAddVisitForm, MakeVisitForm
+from .forms import AddClientByNipForm, PlanDateForm, PlanAddVisitForm, MakeVisitForm
 
 
 def save_coordinates(request, note):
@@ -62,11 +62,10 @@ class TraderLogoutView(LoginRequiredMixin, View):
         return redirect("/trader/login/")
     
     
-class TraderDashboardView(LoginRequiredMixin, PermissionRequiredMixin, View):
+class TraderDashboardView(LoginRequiredMixin, View):
     """
     View for dashboard page
     """
-    permission_required = 'trader_app.add_visit' ## to change
     
     def get(self, request):
         return render(request, 'trader_app/dashboard.html')
@@ -76,7 +75,7 @@ class TraderStartDayView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View starts day of work
     """
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = 'trader_app.view_visit' 
     
     def get(self, request):
         save_coordinates(request, 'Otwarty plan dnia')
@@ -92,7 +91,7 @@ class TraderPlaningDateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for choise date and city
     """
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = 'trader_app.add_visit' 
     
     def get(self, request):
         form= PlanDateForm(initial={'plan_date': date.today()})
@@ -111,7 +110,7 @@ class TraderPlaningVisitsView(LoginRequiredMixin, PermissionRequiredMixin, View)
     View creates new visits.
     """
     
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = ('trader_app.add_visit', 'trader_app.delete_visit') 
     
     def get(self, request, plan_date, city):
         visits = Visit.objects.filter(date=plan_date, visited=False)
@@ -141,7 +140,7 @@ class TraderPlaningVisitsView(LoginRequiredMixin, PermissionRequiredMixin, View)
                 trader=request.user.employee,
                 client_branch=form.cleaned_data['branch']
             )
-            visits = Visit.objects.filter(date=plan_date)
+            visits = Visit.objects.filter(date=plan_date, visited=False)
             new_form= PlanAddVisitForm()
             new_form.fields['branch'].queryset = form_queryset
             
@@ -155,7 +154,7 @@ class TraderPlaningVisitsView(LoginRequiredMixin, PermissionRequiredMixin, View)
                 'message': message,
             })
         else:
-            visits = Visit.objects.filter(bity=city, date=plan_date)
+            visits = Visit.objects.filter(date=plan_date, visited=False)
             if len(visits) < 12:
                 message = f'Brakuje Ci {12 - len(visits)} wizyt do celu'
             else:
@@ -168,7 +167,7 @@ class TraderPlaningVisitsView(LoginRequiredMixin, PermissionRequiredMixin, View)
             
             
 class TraderVisitDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = 'trader_app.delete_visit' 
     """
     View delentes positionfrom cart
     """
@@ -181,7 +180,7 @@ class TraderVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for visits
     """
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = 'trader_app.view_visit' 
     
     def get(self, request, visit_id):
         #Lokaliztion
@@ -214,7 +213,7 @@ class TraderProductsView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View to show Products list
     """
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = 'manager_app.view_product' 
     
     def get(self, request, visit_id):
         products = Product.objects.filter(is_active=True)
@@ -226,7 +225,7 @@ class TraderProductDetailsView(LoginRequiredMixin, PermissionRequiredMixin, View
     """
     View to show details 
     """
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = 'manager_app.view_product' 
     
     def get(self, request, visit_id, product_id):
         save_coordinates(request, 'Wejście w szczeguły produktu')
@@ -240,7 +239,7 @@ class TraderOrderCartCreateView(LoginRequiredMixin, PermissionRequiredMixin, Vie
     """
     View for making orders
     """
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = ('manager_app.add_cart', 'manager_app.add_order') 
     
     def get(self, request, branch_id, visit_id):
         branch = Branch.objects.get(id=branch_id)
@@ -287,7 +286,7 @@ class TraderCartModifyView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for adding posiotions to Cart
     """
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = ('manager_app.add_cart', 'manager_app.delete_cart') 
     
     def get(self, request, visit_id, branch_id, order_id):
         branch = Branch.objects.get(id=branch_id)
@@ -360,7 +359,7 @@ class TraderEndVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View to mark viit as dome
     """
-    permission_required = 'trader_app.add_visit' ## to change
+    permission_required = 'trader_app.change_visit' 
     
     def post(self, request, visit_id):
         save_coordinates(request, 'Zakończenie wizyty')
@@ -369,3 +368,17 @@ class TraderEndVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
         visit.visited = True
         visit.save()
         return redirect('/trader/start_day/')
+    
+    
+class TraderClientAdd(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """
+    View to crate new client ang main adress
+    """
+    permission_required = ('manager_app.add_client', 'manager_app.add_branch')
+    
+    def get(self, request):
+        form = AddClientByNipForm()
+        return render(request, 'trader_app/client_form.html', {'form': form})
+    
+    def post(self, request):
+        return 2

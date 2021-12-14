@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const reg = /\/branch\/edit\/\d+\//;
 
     if (Boolean(window.location.pathname.match(reg))) {
+
         const form = document.querySelector('fieldset')
         const zip_code = form.querySelector('#id_zip_code')
 
@@ -23,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         form.insertBefore(import_button, zip_code.nextElementSibling)
         const legend = document.createElement('legend')
         buttons_div.appendChild(legend)
-
+    
         // this change backround on input tags on chages
         document.querySelectorAll('input').forEach(element => {
             element.addEventListener('keyup', function(event) {
@@ -32,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // import data by zipcode
+        
         import_button.addEventListener('click', function(event) {
             const adress = "http://kodpocztowy.intami.pl/api/" + zip_code.value
             fetch(adress).then( resp => {

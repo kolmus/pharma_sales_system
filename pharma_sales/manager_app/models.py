@@ -102,7 +102,7 @@ class Client(models.Model):
 
 class Branch(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Klient")
-    type = models.IntegerField(choices=ADRESS_TYPES, verbose_name="rodzaj adresu")
+    type = models.IntegerField(choices=ADRESS_TYPES, verbose_name="rodzaj adresu", default=1)
     name_of_branch = models.CharField(max_length=60, verbose_name="Nazwa oddziału", null=True)
     zip_code = models.CharField(max_length=6, verbose_name='Kod pocztowy')
     province = models.CharField(max_length=16, verbose_name='Województwo', null=True)
