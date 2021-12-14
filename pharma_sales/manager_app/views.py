@@ -20,6 +20,7 @@ class LoginView(View):
         LoginForm (class): Form with login and password
     """
     def get(self, request):
+        # print(request.GET['next'])
         form = LoginForm()
         return render(request, 'manager_app/login.html', {'form': form})
 
