@@ -19,7 +19,7 @@ class EmployeeAddForm (forms.Form):
     password1 = forms.CharField(label='Nowe hasło', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Powtórz nowe hasło', widget=forms.PasswordInput, )
     role = forms.CharField(label='Stanowisko')
-    supervisor = forms.ModelChoiceField(queryset=Employee.objects.all(), empty_label='supervisor', label='Przełożony', required=False)
+    supervisor = forms.ModelChoiceField(queryset=Employee.objects.filter(is_supervisor=True), empty_label='supervisor', label='Przełożony', required=False)
 
     def clean(self):
         cleaned_data = super().clean()
