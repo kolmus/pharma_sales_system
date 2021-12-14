@@ -54,7 +54,7 @@ class DashboardView(LoginRequiredMixin, PermissionRequiredMixin, View):
     Dashbord View - supervisors clendar.
     Login required.
     """
-    permission_required = 'manager_app.view_employee',
+    permission_required = 'auth.add_user'
     
     def get(self, request):
         
