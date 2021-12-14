@@ -2,10 +2,20 @@
 {% block content %}
     <a href="/clients/add/"><button>Dodaj Klienta</button></a>
     <a href="/branch/add/"><button>Dodaj Oddział</button></a>
-    {% for employee in traders %}
-        <h2>{{ employee }}</h2>
-            {% for branch in employee.branch_set.all %}
-                <a href="/clients/{{branch.client.id}}/"> {{branch }}</a> <a href="/branch/edit/{{branch.id}}/"><button>Edytuj oddział</button></a> <a href="/branch/{{branch.id}}/orders/add/"><button type="button">Dodaj zamówienie</button></a>
-            {% endfor %}
+    <dl>
+        {% for employee in traders %}
+        <dt>{{ employee }}</dt>
+        {% for branch in employee.branch_set.all %}
+            <dd>
+                <a href="/clients/{{branch.client.id}}/"> {{branch }}</a>
+                <a href="/branch/edit/{{branch.id}}/">
+                    <button>Edytuj oddział</button>
+                </a>
+                <a href="/branch/{{branch.id}}/orders/add/">
+                    <button type="button">Dodaj zamówienie</button>
+                </a>
+            </dd>
+        {% endfor %}
+    </dl>
     {% endfor %}
 {% endblock %}

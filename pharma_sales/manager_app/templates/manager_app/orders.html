@@ -5,6 +5,8 @@
             <dt>{{ status }}</dt>
             {% for order in st_orders %}
                 <dd>{{order}} <a href="/orders/{{order.id}}/cs/"><button type="button">Obsłuż zamówienie</button></a><a href="/orders/{{order.id}}/delete/"><button type="button">Anuluj zamówienie</button></a></dd>
+                {% empty %}
+                <dd>Brak zamówień o tym statusie</dd>
             {% endfor %}
         {% empty %}
         {% endfor %}

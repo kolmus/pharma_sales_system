@@ -11,6 +11,8 @@
                 {% for batch in variant.batch_set.all %}
                     {% if bath.is_active == true %}
                     <dd>
+                        
+                        <img src="{{variant.photo_main}}">
                         Numer serii: {{batch.number}}<br>
                         Ilość pakietów w magazynie: {{batch.quantity}}<br>
                         Cena netto: {{batch.netto}}<br>

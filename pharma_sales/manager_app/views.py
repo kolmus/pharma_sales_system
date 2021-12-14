@@ -494,7 +494,7 @@ class VariantCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
             variant.photo_8 = form.cleaned_data['photo8']
             variant.photo_9 = form.cleaned_data['photo9']
             variant.photo_10 = form.cleaned_data['photo10']
-            variant.product_id = form.cleaned_data['product']
+            variant.product = form.cleaned_data['product']
             variant.next_delivery = form.cleaned_data['next_delivery']
             variant.save()
             return redirect('/products/')
@@ -529,10 +529,10 @@ class VariantUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
         })
         return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Edytuj wariant produktu'})
     
-    def post(self, request):
+    def post(self, request, id_):
         form = VariantForm(request.POST, request.FILES)
         if form.is_valid():
-            variant = Variant()
+            variant = Variant.objects.get(id=id_)
             variant.dose = form.cleaned_data['dose']
             variant.unit = form.cleaned_data['unit']
             variant.in_package = form.cleaned_data['in_package']
@@ -549,6 +549,7 @@ class VariantUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
             variant.product_id = form.cleaned_data['product']
             variant.next_delivery = form.cleaned_data['next_delivery']
             variant.save()
+            print(variant.photo_main)
             return redirect('/products/')
         else:
             return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
@@ -712,7 +713,7 @@ class OrderListView(LoginRequiredMixin, PermissionRequiredMixin,View):
         return render(request, 'manager_app/orders.html', {'orders': result})
     
     
-class OrderCSModifyView(LoginRequiredMixin, UpdateView):   # need changes
+class OrderCSModifyView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):   # need changes
     """
     View for Customer Service to manage order manualy
     """
