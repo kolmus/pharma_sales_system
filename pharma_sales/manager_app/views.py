@@ -676,14 +676,11 @@ class OrderStatusUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     permission_required = 'manager_app.change_order'
     
-    def get(self, request, branch_id, order_id, status_value):
+    def post(self, request, order_id, status_value):
         order = Order.objects.get(id=order_id)
         order.order_status = status_value
         order.save()
-        if status_value == CREATING_ST:
-            return redirect(f'/branch/{branch_id}/orders/{order_id}/')
-        else:
-            return redirect('/orders/')
+        return redirect('/orders/')
 
 
 class OrderDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):

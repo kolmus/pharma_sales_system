@@ -29,7 +29,9 @@
                 
                 {% endfor %}
             </tbody>
-            <h4>Razem: {{order.total_netto}}zł netto</h4> <a href="/branch/{{order.branch.id}}/orders/{{order.id}}/status/1/"><button type="button">Przyjmij zamówienie</button></a>
+            <h4>Razem: {{order.total_netto}}zł netto</h4> <form action="/orders/{{order.id}}/status/1/" method="post">
+                {% csrf_token %}
+                <button type="submit">Przyjmij zamówienie</button></form>
         </table>
         {% else %}
         Brak pozycji w zamówieniu

@@ -1,11 +1,50 @@
 {% extends 'manager_app/base.html' %}
 {% block content %}
-    <h3>Modyfikacja zamówienia</h3>
+    <h3>Zarządzanie zamówieniem zamówienia</h3>
+    <form method="post" action="../status/2/">
+        {% csrf_token %}
+        <input type="submit" value="Wstrzymaj do płatności">
+    </form>
+    <form method="post" action="../status/3/">
+        {% csrf_token %}
+        <input type="submit" value="Zatwierdź i przekaż do realizacji">
+    </form>
+    <form method="post" action="../status/4/">
+        {% csrf_token %}
+        <input type="submit" value="Skompletowane">
+    </form>
+    <form method="post" action="../status/5/">
+        {% csrf_token %}
+        <input type="submit" value="Problem z zamówieniem">
+    </form>
+    <form method="post" action="../status/6/">
+        {% csrf_token %}
+        <input type="submit" value="Kurier odebrał">
+    </form>
+    <form method="post" action="../status/7/">
+        {% csrf_token %}
+        <input type="submit" value="Oczekiwanie na płatność">
+    </form>
+    <form method="post" action="../status/8/">
+        {% csrf_token %}
+        <input type="submit" value="Zakończone">
+    </form>
+
+
+
+
+
+
+
+
+
+
+
     <form method="post">
         <fieldset>
             {% csrf_token %}
             {{ form }}
-            <input type="submit" value="Zatwierdź">
+            <input type="submit" value="Zapisz zmiany">
         </fieldset>
     </form>
     

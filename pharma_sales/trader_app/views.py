@@ -192,7 +192,8 @@ class TraderVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
     
     def get(self, request, visit_id):
         #Lokaliztion
-        save_coordinates(request, 'Wejście w wizytę')
+        visit = Visit.objects.get(id=visit_id)
+        save_coordinates(request, f'Wejście w wizytę {visit.client_branch}')
         
         visit = Visit.objects.get(id=visit_id)
         if visit.note or visit.proof_img:
@@ -205,7 +206,8 @@ class TraderVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return render(request, 'trader_app/visit.html', {'form': form, 'visit': visit})
     
     def post(self, request, visit_id):
-        save_coordinates(request, 'Zdjęcie z wizyty')
+        visit = Visit.objects.get(id=visit_id)
+        save_coordinates(request, f'Zdjęcie z wizyty {visit.client_branch}')
         form = MakeVisitForm (request.POST)
         visit = Visit.objects.get(id=visit_id)
         if form.is_valid():
@@ -236,7 +238,8 @@ class TraderProductDetailsView(LoginRequiredMixin, PermissionRequiredMixin, View
     permission_required = 'manager_app.view_product' 
     
     def get(self, request, visit_id, product_id):
-        save_coordinates(request, 'Wejście w szczeguły produktu')
+        visit = Visit.objects.get(id=visit_id)
+        save_coordinates(request, f'Wejście w szczeguły produktu {visit.branch}')
         
         product = Product.objects.get(id=product_id)
         print(product.variant_set.all())
@@ -370,7 +373,8 @@ class TraderEndVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'trader_app.change_visit' 
     
     def post(self, request, visit_id):
-        save_coordinates(request, 'Zakończenie wizyty')
+        visit = Visit.objects.get(id=visit_id)
+        save_coordinates(request, f'Zakończenie wizyty {visit.branch}')
         
         visit = Visit.objects.get(id=visit_id)
         visit.visited = True

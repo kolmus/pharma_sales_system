@@ -7,8 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const reg = /\/branch\/edit\/\d+\//;
 
-    if (Boolean(window.location.pathname.match(reg))) {
-
+    if (Boolean(window.location.pathname.match(reg)) || window.location.pathname == '/branch/add/') {
         const form = document.querySelector('fieldset')
         const zip_code = form.querySelector('#id_zip_code')
 

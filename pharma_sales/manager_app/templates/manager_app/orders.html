@@ -4,7 +4,7 @@
         {% for status, st_orders in orders.items  %}
             <dt>{{ status }}</dt>
             {% for order in st_orders %}
-                <dd>{{order}} <a href="/orders/{{order.id}}/cs/"><button type="button">Modyfikuj</button></a><a href="/orders/{{order.id}}/delete/"><button type="button">Anuluj zamówienie</button></a></dd>
+                <dd>{{order}} <a href="/orders/{{order.id}}/cs/"><button type="button">Obsłuż zamówienie</button></a><a href="/orders/{{order.id}}/delete/"><button type="button">Anuluj zamówienie</button></a></dd>
             {% endfor %}
         {% empty %}
         {% endfor %}
