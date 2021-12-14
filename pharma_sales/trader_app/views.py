@@ -208,12 +208,12 @@ class TraderVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def post(self, request, visit_id):
         visit = Visit.objects.get(id=visit_id)
         save_coordinates(request, f'Zdjęcie z wizyty {visit.client_branch}')
-        form = MakeVisitForm (request.POST)
-        visit = Visit.objects.get(id=visit_id)
+        form = MakeVisitForm (request.POST, request.FILES, instance=Visit.objects.get(id=visit_id))
+        # visit = Visit.objects.get(id=visit_id)
         if form.is_valid():
-            visit.proof_img = form.cleaned_data['proof_img']
-            visit.note = form.cleaned_data['note']
-            visit.save()
+
+            
+            visit =form.save()
             return render(request, 'trader_app/visit.html', {'form': form, 'visit': visit})
         else: 
             return render(request, 'trader_app/visit.html', {'form': form, 'visit': visit})
