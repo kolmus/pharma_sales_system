@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from datetime import date, timedelta
 
 from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm, CartForm, CalendarForm
-from .models import ORDER_STATUS, Batch, CalendarSupervisor, Client, Employee, Branch, Product, Variant, Order, Cart, CLIENT_TYPE, WEEKDAY
+from .models import CREATING_ST, ORDER_STATUS, Batch, CalendarSupervisor, Client, Employee, Branch, Product, Variant, Order, Cart, CLIENT_TYPE, WEEKDAY
 from django.contrib.auth.models import User
 
 
@@ -48,11 +48,13 @@ class LogoutView(View):
         return redirect("/login/")
 
 
-class DashboardView(LoginRequiredMixin, View):
+class DashboardView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     Dashbord View - supervisors clendar.
     Login required.
     """
+    permission_required = 'manager_app.view_employee',
+    
     def get(self, request):
         
         today = date.today()
@@ -149,35 +151,65 @@ class DashboardView(LoginRequiredMixin, View):
         return redirect('/')
         
 
-class EmployeeView(LoginRequiredMixin, View):
-    """class fer Emlpoyers list Viev
-
-    Args:
-        none
-
-    Returns:
-        team [QuerySet]: Objects of Employee model with 'supervisor' set on current user
+class EmployeeView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """class for Emlpoyers list Viev
     """
+    permission_required = 'manager_app.view_employee',
     
     def get(self, request):
         user = User.objects.get(id=request.user.id)
         user_employee = user.employee
         team = Employee.objects.filter(supervisor=user_employee)
         
-        info = {}
-        for employee in team:
-            info['employee'] = employee
-            
-            
+        today = date.today()
+        year, month, day = (int(x) for x in str(today).split('-'))
+        weekday = today.weekday()
         
-        return render(request, 'manager_app/employees.html', {'team': team})
+        last_monday = today - timedelta(days = weekday )
+        last_week_monday = last_monday - timedelta(days = 7)
+        
+        info = []
+        for employee in team:
+            traders_info = {}
+            traders_info['employee'] = employee
+            
+            branches = Branch.objects.filter(account_manager = employee)
+            
+            last_month_total = 0
+            for order in Order.objects.filter(
+                branch__in=branches, 
+                date__gte=f'{year}-{month-1}-01', 
+                date__lt=f'{year}-{month}-01'
+            ):
+                for position in order.cart_set.all():
+                    last_month_total += (int(position.quantity) * float(position.batch.netto))
+            
+            traders_info['last_month'] = round(last_month_total, 2)
+            
+            this_month_total = 0
+            for order in Order.objects.filter(branch__in=branches, date__gte=f'{year}-{month}-01'):
+                for position in order.cart_set.all():
+                    this_month_total += (int(position.quantity) * float(position.batch.netto))
+            traders_info['this_month'] = round(this_month_total, 2)
+            
+            traders_info['visit_done'] = len(employee.visit_set.filter(date=today, visited=True))
+            traders_info['visit_todo'] = len(employee.visit_set.filter(date=today, visited=False))
+            traders_info['orders_today'] = len(Order.objects.filter(branch__in=branches, date=today))
+            
+            today_total = 0
+            for order in Order.objects.filter(branch__in=branches, date=today):
+                for position in order.cart_set.all():
+                    today_total += (int(position.quantity) * float(position.batch.netto))
+            traders_info['today_total'] = round(today_total, 2)
+            
+            info.append(traders_info)
+        
+        return render(request, 'manager_app/employees.html', {'info': info})
 
 
 class EmployeeCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """View fo creating new users.
     Creates new user and new Emploee
-        
-    Returns: 
         
     """
     permission_required = 'auth.add_user'
@@ -209,7 +241,7 @@ class EmployeeCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
             return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
 
 
-class EmployeeDetailsView(LoginRequiredMixin, View):
+class EmployeeDetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """ 
     Details Viev for Employee model  objects
 
@@ -219,6 +251,8 @@ class EmployeeDetailsView(LoginRequiredMixin, View):
     Returns:
         employee [object]: Emloyee object
     """
+    permission_required = 'manager_app.view_employee',
+    
     def get(self, request, id_):
         employee = Employee.objects.get(id=id_)
         return render(request, 'manager_app/employee_details.html', {'employee': employee})
@@ -235,6 +269,8 @@ class EmployeeEditView(LoginRequiredMixin, View):
         form : with curent values
         legend (str): legend for form
     """
+    permission_required = 'manager_app.change_employee',
+    
     def get(self, request, id_):
         employee = Employee.objects.get(id=id_)
         form = EmployeeEditForm(initial={
@@ -268,11 +304,13 @@ class EmployeeEditView(LoginRequiredMixin, View):
             return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
         
 
-class ClientCreateView(LoginRequiredMixin, View):
+class ClientCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
-    Viev for create Client
+    View for create Client
     redirect to Create Branch
     """
+    permission_required = 'manager_app.add_client',
+    
     def get(self, request):
         form = ClientForm()
         return render(
@@ -305,16 +343,21 @@ class ClientCreateView(LoginRequiredMixin, View):
         )
 
 
-class ClientDetailsView(LoginRequiredMixin, View):
+class ClientDetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for details of client and branch
     """
+    permission_required = 'manager_app.view_client',
+    
     def get(self, request, id_):
         client = Client.objects.get(id=id_)
         return render(request, 'manager_app/client_details.html', {'client': client})
 
 
-class ClientListView(LoginRequiredMixin, View):
+class ClientListView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """View to show clients group by employers"""
+    permission_required = ('manager_app.view_employee', 'manager_app.view_client')
+    
     def get(self, request):
         traders = Employee.objects.filter(supervisor=request.user.employee)
         return render(request, 'manager_app/clients.html', {'traders': traders})
@@ -324,50 +367,57 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
     """
     View for update Client
     """
+    permission_required = 'manager_app.change_client',
     model = Client
     fields = '__all__'
     success_url = f'/clients/'
     
     
-class BranchCreateView(LoginRequiredMixin, CreateView):
+class BranchCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     View for create Branch
     """
+    permission_required = 'manager_app.add_branch',
     model = Branch
     fields = '__all__'
     success_url = '/clients/'
 
 
-class BranchUpdateView(LoginRequiredMixin, UpdateView):
+class BranchUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     View  for update Branch
     """
+    permission_required = 'manager_app.change_branch',
     model = Branch
     fields = '__all__'
     success_url = '/clients/'
     
     
-class ProductCreateView(LoginRequiredMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     View for create Product
     """
+    permission_required = 'manager_app.add_product'
     model = Product
     fields = '__all__'
     success_url = '/variant/add/'
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin,PermissionRequiredMixin, UpdateView):
     """
     View  for update Branch
     """
+    permission_required = 'manager_app.change_product'
     model = Product
     fields = '__all__'
     succes_url = '/products/'
 
-class ProductListView(LoginRequiredMixin, View):
+class ProductListView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for list of Products and Variants
     """
+    permission_required = 'manager_app.view_product'
+    
     def get(self, request):
         products = Product.objects.filter(is_active=True)
         list = {}
@@ -376,10 +426,12 @@ class ProductListView(LoginRequiredMixin, View):
         return render(request, 'manager_app/products.html', {'products': list})
 
 
-class VariantCreateView(LoginRequiredMixin, View):
+class VariantCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for add new variants to product
     """
+    permission_required = 'manager_app.add_variant'
+    
     def get(self, request):
         form = VariantForm()
         return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
@@ -409,10 +461,12 @@ class VariantCreateView(LoginRequiredMixin, View):
             return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
 
 
-class VariantUpdateView(LoginRequiredMixin, View):
+class VariantUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for update variants
     """
+    permission_required = 'manager_app.change_variant'
+    
     def get(self, request, id_):
         variant = Variant.objects.get(id=id_)
         form = VariantForm(initial={
@@ -459,19 +513,23 @@ class VariantUpdateView(LoginRequiredMixin, View):
             return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
         
 
-class BatchCreateView(LoginRequiredMixin, CreateView):
+class BatchCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     View for create Batch
     """
+    permission_required = 'manager_app.add_batch'
+    
     model = Batch
     fields = '__all__'
     success_url = '/products/'
 
 
-class OrderCartCreateView(LoginRequiredMixin, View):
+class OrderCartCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for new Order and Cart
     """
+    permission_required = 'manager_app.add_order'
+    
     def get(self, request, branch_id):
         branch = Branch.objects.get(id=branch_id)
         form = CartForm()
@@ -513,10 +571,12 @@ class OrderCartCreateView(LoginRequiredMixin, View):
             return render(request, 'manager_app/cart_form.html', {'title': f'Nowe zamówienie dla {branch}', 'form': form})
 
 
-class CartModifyView(LoginRequiredMixin, View):
+class CartModifyView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for adding posiotions to Cart
     """
+    permission_required = 'manager_app.add_cart'
+    
     def get(self, request, branch_id, order_id):
         branch = Branch.objects.get(id=branch_id)
         order = Order.objects.get(id=order_id)
@@ -559,6 +619,8 @@ class CartDeleteView(LoginRequiredMixin, View):
     """
     View remove positiom from Cart
     """
+    permission_required = 'manager_app.add_cart'
+    
     def post(self, request, order_id, position_id):
         position = Cart.objects.get(id=position_id)
         branch_id = position.order.branch.id
@@ -567,21 +629,28 @@ class CartDeleteView(LoginRequiredMixin, View):
         return redirect(f'/branch/{branch_id}/orders/{order_id}/')
 
 
-class OrderStatusUpdateView(LoginRequiredMixin, View):
+class OrderStatusUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """
+    View to update order status
+    """
+    permission_required = 'manager_app.change_order'
+    
     def get(self, request, branch_id, order_id, status_value):
         order = Order.objects.get(id=order_id)
         order.order_status = status_value
         order.save()
-        if status_value == 0:
+        if status_value == CREATING_ST:
             return redirect(f'/branch/{branch_id}/orders/{order_id}/')
         else:
             return redirect('/orders/')
 
 
-class OrderDeleteView(LoginRequiredMixin, View):
+class OrderDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for delete Order
     """
+    permission_required = 'manager_app.change_order'
+    
     def get(self, request, order_id):
         order = Order.objects.get(id=order_id)
         order.delete()
@@ -589,10 +658,12 @@ class OrderDeleteView(LoginRequiredMixin, View):
         return redirect(f'/orders/')
 
 
-class OrderListView(LoginRequiredMixin,View):
+class OrderListView(LoginRequiredMixin, PermissionRequiredMixin,View):
     """
     Lists of all Orders without ended
     """
+    permission_required = 'manager_app.view_order'
+    
     def get(self, request):
         orders = Order.objects.filter(order_status__in=[0, 1, 2, 3, 4, 5, 6]).order_by('order_status', '-date')
         
@@ -603,10 +674,12 @@ class OrderListView(LoginRequiredMixin,View):
         return render(request, 'manager_app/orders.html', {'orders': result})
     
     
-class OrderCSModifyView(LoginRequiredMixin, UpdateView):
+class OrderCSModifyView(LoginRequiredMixin, UpdateView):   # need changes
     """
     View for Customer Service to manage order manualy
     """
+    permission_required = 'manager_app.change_order'
+    
     model = Order
     fields = ['order_number', 'branch', 'invoice', 'discount']
     success_url = '/orders/'

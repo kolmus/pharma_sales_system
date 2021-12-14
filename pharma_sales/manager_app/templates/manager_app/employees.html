@@ -5,22 +5,22 @@
         <thead>
             <th>Pracownik</th>
             <th>Sprzedaż za zeszły miesiąc</th>
-            <th>Sprzedaż w tym miesicu</th>
+            <th>Sprzedaż w tym miesiącu</th>
             <th>Disiejsze wykonane</th>
             <th>Dzisiejsze do zrobienia</th>
             <th>Ilość zamówień dziś</th>
             <th>Kwota zamówień dziś</th>
         </thead>
         <tbody>
-            {% for trader in team %}
+            {% for trader in info %}
             <tr>
-                <td><a href="/employees/{{trader.id}}/">{{ trader.name }}</a></td>
-                <td>zeszly_miesiac</td>
-                <td>ten_miesiac</td>
-                <td>dzis_todo</td>
-                <td>dzis_done</td>
-                <td>deale_dzis</td>
-                <td>wartosc_dzis</td>
+                <td><a href="/employees/{{trader.employee.id}}/">{{ trader.employee }} </a></td>
+                <td>{{trader.last_month}} netto</td>
+                <td>{{trader.this_month}} netto</td>
+                <td>{{trader.visit_done}}</td>
+                <td>{{trader.visit_todo}}</td>
+                <td>{{trader.orders_today}}</td>
+                <td>{{trader.today_total}} netto</td>
             </tr>
             {% endfor %}
         </tbody>

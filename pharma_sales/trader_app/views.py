@@ -5,10 +5,18 @@ from django.views.generic.edit import FormView, CreateView, ProcessFormView, Upd
 from django.views import View
 from datetime import date
 
-from manager_app.models import Employee, User, Branch, Order, Cart, Batch, Variant, Product, Client
+from manager_app.models import (
+    FAMILY_PHARM,
+    REGISTER_ADRESS,
+    Branch, 
+    Order, 
+    Cart, 
+    Product, 
+    Client
+)
 from manager_app.forms import LoginForm, CartForm
 from .models import Visit, Localization
-from .forms import AddClientByNipForm, PlanDateForm, PlanAddVisitForm, MakeVisitForm
+from .forms import ClientByNipForm, PlanDateForm, PlanAddVisitForm, MakeVisitForm
 
 
 def save_coordinates(request, note):
@@ -377,8 +385,41 @@ class TraderClientAdd(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = ('manager_app.add_client', 'manager_app.add_branch')
     
     def get(self, request):
-        form = AddClientByNipForm()
+        form = ClientByNipForm(initial={
+            'type': 0,
+            'visit_hour_from': '8:00',
+            'visit_hour_to': '16:00',
+            'type': FAMILY_PHARM
+        })
         return render(request, 'trader_app/client_form.html', {'form': form})
     
     def post(self, request):
-        return 2
+        form = ClientByNipForm(request.POST)
+        if form.is_valid():
+            client = Client()
+            client.nip = form.cleaned_data['nip']
+            client.company_name = form.cleaned_data['company_name']
+            client.short_company_name = form.cleaned_data['short_company_name']
+            client.logo = form.cleaned_data['logo']
+            client.regon = form.cleaned_data['regon']
+            client.krs = form.cleaned_data['krs']
+            client.type = form.cleaned_data['type']
+            client.save()
+            branch = Branch()
+            branch.client = client
+            branch.type = REGISTER_ADRESS
+            branch.name_of_branch = form.cleaned_data['name_of_branch']
+            branch.zip_code = form.cleaned_data['zip_code']
+            branch.province = form.cleaned_data['province']
+            branch.city = form.cleaned_data['city']
+            branch.street = form.cleaned_data['street']
+            branch.building_number = form.cleaned_data['building_number']
+            branch.apartment_number = form.cleaned_data['apartment_number']
+            branch.details = form.cleaned_data['details']
+            branch.account_manager = request.user.employee
+            branch.visit_days = form.cleaned_data['visit_days']
+            branch.visit_hour_from = form.cleaned_data['visit_hour_from']
+            branch.visit_hour_to = form.cleaned_data['visit_hour_to']
+            return redirect('/trader/')
+        else:
+            return render(request, 'trader_app/client_form.html', {'form': form})

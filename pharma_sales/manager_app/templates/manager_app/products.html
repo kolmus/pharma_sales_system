@@ -1,17 +1,24 @@
 {% extends 'manager_app/base.html' %}
 {% block content %}
+<a href="/batch/add/"><button type="button">Dodaj partię</button></a><a href="/variant/add/"><button type="button">Dodaj wariant</button></a><a href="/products/add/"><button type="button">Dodaj produkt</button></a>
     {% for product, variants in products.items %}
-        <h2>{{ product }}</h2>
+        <h3>{{ product }}</h3><a href="/variant/edit/{{product.id}}/"><button type="button">Edytuj produkt</button></a>
+        <dl>
             {% for variant in variants %}
-            <h3>{{variant}}</h3>
+            <dt>
+            {{variant}} <a href="/variant/edit/{{variant.id}}/"><button type="button">Edytuj wariant</button></a>
+            </dt>
                 {% for batch in variant.batch_set.all %}
                     {% if bath.is_active == true %}
-                        <h4>Numer serii: {{batch.number}}</h4>
-                        <h5>Ilość pakietów w magazynie: {{batch.quantity}}</h5>
-                        <h5>Cena netto: {{batch.netto}}</h5>
-                        <h5>Data przydatności do użycia: {{batch.expiration_date}}</h5>
+                    <dd>
+                        Numer serii: {{batch.number}}<br>
+                        Ilość pakietów w magazynie: {{batch.quantity}}<br>
+                        Cena netto: {{batch.netto}}<br>
+                        Data przydatności do użycia: {{batch.expiration_date}}<br>
+                    </dd>
                     {% endif %}
                 {% endfor %}
             {% endfor %}
+        </dl>
     {% endfor %}
 {% endblock %}

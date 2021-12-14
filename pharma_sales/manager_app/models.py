@@ -3,10 +3,11 @@ from django.db.models.deletion import CASCADE, SET_NULL
 from django.contrib.auth.models import User
 from datetime import date
 
-
+REGISTER_ADRESS = 2
+DELIVERY_ADRESS = 1
 ADRESS_TYPES = (
-    (1, 'Adres korespondencyjny'),
-    (2, 'Adres Rejestracyjny'),
+    (DELIVERY_ADRESS, 'Adres korespondencyjny'),
+    (REGISTER_ADRESS, 'Adres Rejestracyjny'),
 )
 UNITS = (
     (1, 'mg'),
@@ -27,9 +28,11 @@ PAYMENT_STATUS = (
     (LATE_PAYMENT, 'Po terminie')
 )
 
+FAMILY_PHARM = 2
+BIG_PHARM = 1
 CLIENT_TYPE = (
-    (1, 'Apteka sieciowa'),
-    (2, 'Apteka rodzinna')
+    (BIG_PHARM, 'Apteka sieciowa'),
+    (FAMILY_PHARM, 'Apteka rodzinna')
 )
 
 MONDAY = 0
@@ -205,9 +208,6 @@ class Order(models.Model):
         for position in self.cart_set.all():
             result += (float(position.batch.netto) * position.quantity) * (1 + float(position.batch.get_vat_display()))
         return result
-
-
-
 
 
 class Cart(models.Model):
