@@ -152,21 +152,15 @@ class DashboardView(LoginRequiredMixin, PermissionRequiredMixin, View):
         
 
 class EmployeeView(LoginRequiredMixin, PermissionRequiredMixin, View):
-    """class for Emlpoyers list Viev
+    """class for Emlpoyers list View
     """
     permission_required = 'manager_app.view_employee',
     
     def get(self, request):
-        user = User.objects.get(id=request.user.id)
-        user_employee = user.employee
-        team = Employee.objects.filter(supervisor=user_employee)
+        team = Employee.objects.filter(supervisor=request.user.employee)
         
         today = date.today()
         year, month, day = (int(x) for x in str(today).split('-'))
-        weekday = today.weekday()
-        
-        last_monday = today - timedelta(days = weekday )
-        last_week_monday = last_monday - timedelta(days = 7)
         
         info = []
         for employee in team:
@@ -243,7 +237,7 @@ class EmployeeCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
 class EmployeeDetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """ 
-    Details Viev for Employee model  objects
+    Details View for Employee model  objects
 
     Args:
         
@@ -254,8 +248,55 @@ class EmployeeDetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'manager_app.view_employee',
     
     def get(self, request, id_):
+        today = date.today()
+        year, month, day = (int(x) for x in str(today).split('-'))
+        
         employee = Employee.objects.get(id=id_)
-        return render(request, 'manager_app/employee_details.html', {'employee': employee})
+        
+        branches = Branch.objects.filter(account_manager=employee)
+        last_month_total = 0
+        for order in Order.objects.filter(
+            branch__in=branches, 
+            date__gte=f'{year}-{month-1}-01', 
+            date__lt=f'{year}-{month}-01'
+        ):
+            for position in order.cart_set.all():
+                last_month_total += (int(position.quantity) * float(position.batch.netto))
+            
+        this_month_total = 0
+        for order in Order.objects.filter(branch__in=branches, date__gte=f'{year}-{month}-01'):
+            for position in order.cart_set.all():
+                this_month_total += (int(position.quantity) * float(position.batch.netto))
+        
+        orders_last_month = 0
+        for branch in branches:
+            for order in branch.order_set.filter(date__gte=f'{year}-{month-1}-01'):
+                orders_last_month += 1
+        
+        this_month_orders = 0
+        for branch in branches:
+            for order in branch.order_set.filter(date__gte=f'{year}-{month}-01'):
+                this_month_orders += 1
+        
+        orders_today = 0
+        orders_today_total = 0
+        for branch in branches:
+            for order in branch.order_set.filter(date=today):
+                orders_today += 1
+                for position in order.cart_set.all():
+                    orders_today_total += (int(position.quantity) * float(position.batch.netto))
+        
+        return render(request, 'manager_app/employee_details.html', {
+            'employee': employee,
+            'last_month_total': round(last_month_total, 2),
+            'this_month_total': round(this_month_total, 2),
+            'last_month_orders': orders_last_month,
+            'this_month_orders': this_month_orders,
+            'visit_today_done': len(employee.visit_set.filter(date=today, visited=True)),
+            'visit_today': len(employee.visit_set.filter(date=today)),
+            'orders_today': orders_today,
+            'orders_today_total': orders_today_total
+        })
 
 
 class EmployeeEditView(LoginRequiredMixin, View):
