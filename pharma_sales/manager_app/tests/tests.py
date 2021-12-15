@@ -4,7 +4,7 @@ import datetime
 from django.http import response
 import pytest
 
-from manager_app.models import THURSDAY, Employee, Client, FRIDAY, REGISTER_ADRESS, Branch, Product
+from manager_app.models import THURSDAY, Employee, Client, FRIDAY, REGISTER_ADRESS, Branch, Product, Variant
 
 @pytest.mark.django_db
 def test_login_page(client, three_exemple_users):
@@ -247,4 +247,24 @@ def test_add_product(client, logged_user_everymodel):
     product = Product.objects.get(name = 'name of product')
     assert product.description == 'some description'
     assert product.active_substance == 'anything'
+    
+@pytest.mark.django_db
+def test_edit_product(client, logged_user_everymodel):
+    
+    product = Product.objects.all()[0]
+    pr_id = product.id
+    
+    assert product.name != 'name of product test2'
+    assert product.description != 'some description test2'
+    assert product.active_substance != 'anything test2'
+    response = client.post(f'/products/edit/{pr_id}/', {
+        'name': 'name of product test2',
+        'description': 'some description test2',
+        'active_substance': 'anything test2'
+    })
+    product = Product.objects.get(id = pr_id)
+    assert response.status_code == 302
+    assert product.name == 'name of product test2'
+    assert product.description == 'some description test2'
+    assert product.active_substance == 'anything test2'
     

@@ -2,10 +2,19 @@
 
 from django.contrib.auth.models import Permission, User
 
-from manager_app.models import BIG_PHARM, FAMILY_PHARM, Branch, Client, Employee, REGISTER_ADRESS, FRIDAY, Product
+from manager_app.models import BIG_PHARM, FAMILY_PHARM, Branch, Client, Employee, REGISTER_ADRESS, FRIDAY, Product, Variant
 
 
 def create_supervisor(username, password):
+    """for tests - create supervisor employe
+
+    Args:
+        username (str): [new username]
+        password (str): [secret password]
+
+    Returns:
+        user [object]: [object of User model]
+    """    
     print(password)
     user = User.objects.create_user(
         username=username,
@@ -185,3 +194,29 @@ def create_product(number):
         new_product.save()
         
     return new_product1
+
+def create_variant(product, number):
+    variant = Variant()
+    variant.dose = 1
+    variant.unit = 1
+    variant.in_package = 20,
+    variant.product = product
+    variant.is_active = True
+    variant.save()
+    
+    for i in range(number):
+        variant1 = Variant()
+        variant1.dose = 1 + i
+        variant1.unit = 1 + i
+        variant1.in_package = 20 +i,
+        variant1.product = product
+        variant1.is_active = True
+        variant1.save()
+    return variant
+        
+        
+        
+        
+        
+        
+        

@@ -2,7 +2,7 @@
 {% block content %}
 <a href="/batch/add/"><button type="button">Dodaj partię</button></a><a href="/variant/add/"><button type="button">Dodaj wariant</button></a><a href="/products/add/"><button type="button">Dodaj produkt</button></a>
     {% for product in products %}
-    <h3>{{ product }}</h3><a href="/product/edit/{{product.id}}/"><button type="button">Edytuj produkt</button></a>
+    <h3>{{ product }}</h3><a href="/products/edit/{{product.id}}/"><button type="button">Edytuj produkt</button></a>
         <dl>
             {% for variant in product.variant_set.all %}
             <dt>

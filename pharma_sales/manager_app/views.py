@@ -461,7 +461,7 @@ class ProductUpdateView(LoginRequiredMixin,PermissionRequiredMixin, UpdateView):
     permission_required = 'manager_app.change_product'
     model = Product
     fields = '__all__'
-    succes_url = '/products/'
+    success_url = '/products/'
 
 class ProductListView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
