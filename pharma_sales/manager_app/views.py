@@ -471,10 +471,9 @@ class ProductListView(LoginRequiredMixin, PermissionRequiredMixin, View):
     
     def get(self, request):
         products = Product.objects.filter(is_active=True)
-        list = {}
-        for product in products:
-            list[product.name] = Variant.objects.filter(product_id=product, is_active=True)
-        return render(request, 'manager_app/products.html', {'products': list})
+        
+        
+        return render(request, 'manager_app/products.html', {'products': products})
 
 
 class VariantCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
