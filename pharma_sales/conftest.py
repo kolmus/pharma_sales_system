@@ -4,7 +4,7 @@ import pytest
 from manager_app.models import (
     Employee
 )
-from manager_app.tests.utils import create_branch, create_supervisor, create_employee, create_2clients
+from manager_app.tests.utils import create_branch, create_product, create_supervisor, create_employee, create_2clients
 
 @pytest.fixture
 def three_exemple_users():
@@ -124,17 +124,19 @@ def logged_user_everymodel(client):
     user2 = create_employee(username='trader', password="SecretPassword", supervisor=user.employee)
     new_client = create_2clients(nip=5222851, nip2=45876321)
     new_branch = create_branch(new_client, user2.employee)
-    
+    new_product = create_product(6)
     client.login(
         username='supervisor',
         password='SecretPassword',
     )
     
     print("####################" + str(user.employee.id))
-    print(user.username)
-    print(user.password)
-    print(new_client.id)
-    
+    print('username ', user.username)
+    print('password   ', user.password)
+    print('new client id  ', new_client.id)
+    print('new branch id    ', new_branch.id)
+    print('New product id', new_product.id)
     print("####################" + str(user2.employee.id))
     
     return client, user
+

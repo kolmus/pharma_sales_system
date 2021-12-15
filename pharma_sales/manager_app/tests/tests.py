@@ -1,9 +1,10 @@
 from django.contrib.auth.models import User
 
 import datetime
+from django.http import response
 import pytest
 
-from manager_app.models import Employee, Client, FRIDAY, REGISTER_ADRESS, Branch
+from manager_app.models import THURSDAY, Employee, Client, FRIDAY, REGISTER_ADRESS, Branch, Product
 
 @pytest.mark.django_db
 def test_login_page(client, three_exemple_users):
@@ -83,7 +84,7 @@ def test_create_employee_page(client, logged_user_everymodel):
     
 @pytest.mark.django_db
 def test_edit_employee_page(client, logged_user_everymodel):   # form to repair
-    user = User.objects.get(username='supervisor')
+    
     employee = Employee.objects.filter(is_supervisor=False)[0]
     emp_id = employee.id
     
@@ -134,13 +135,15 @@ def test_edit_employee_page(client, logged_user_everymodel):   # form to repair
 
 @pytest.mark.django_db
 def test_branch_create(client, logged_user_everymodel):
-    user = User.objects.get(username='supervisor')
+    
     employee = Employee.objects.filter(is_supervisor=False)[0]
     client_in_base = Client.objects.all()[0]
     client_id = client_in_base.id
+    
+    assert len(Branch.objects.filter(name_of_branch='name of branch')) == False
     print(employee.id)
     response = client.post(f'/branch/add/', {
-        'client': client_in_base.id,
+        'client': client_id,
         'type': REGISTER_ADRESS,
         'name_of_branch': 'name of branch',
         'zip_code': '01-234',
@@ -174,4 +177,74 @@ def test_branch_create(client, logged_user_everymodel):
 
 @pytest.mark.django_db
 def test_edit_branch(client, logged_user_everymodel):
-    pass
+    
+    
+    employee = Employee.objects.filter(is_supervisor=False)[0]
+    client_in_base = Client.objects.all()[0]
+    branch = Branch.objects.all()[0]
+    br_id = branch.id
+    
+
+    assert branch.name_of_branch != 'name of branch => loremipsum'
+    assert branch.zip_code != '02-495'
+    assert branch.province != 'provinceggg'
+    assert branch.city != 'cityggg'
+    assert branch.street != 'streetggg'
+    assert branch.building_number != '2008C'
+    assert branch.apartment_number != '12sl'
+    assert branch.details != 'short note edited branch'
+    assert branch.visit_hour_from != datetime.time(7, 0)
+    assert branch.visit_hour_to != datetime.time(17, 0)
+    
+    
+    response = client.post(f'/branch/edit/{branch.id}/', {
+        'client': branch.client.id,
+        'type': REGISTER_ADRESS,
+        'name_of_branch': 'name of branch => loremipsum',
+        'zip_code': '02-495',
+        'province': 'provinceggg',
+        'city': 'cityggg',
+        'street': 'streetggg',
+        'building_number': '2008C',
+        'apartment_number': '12sl',
+        'details': 'short note edited branch',
+        'account_manager': employee.id,
+        'visit_days': THURSDAY,
+        'visit_hour_from': '07:00:00',
+        'visit_hour_to': '17:00:00'
+    })
+    
+
+    assert response.status_code == 302
+    branch = Branch.objects.get(id=br_id)
+    assert branch.type == REGISTER_ADRESS
+    assert branch.name_of_branch == 'name of branch => loremipsum'
+    assert branch.zip_code == '02-495'
+    assert branch.province == 'provinceggg'
+    assert branch.city == 'cityggg'
+    assert branch.street == 'streetggg'
+    assert branch.building_number == '2008C'
+    assert branch.apartment_number == '12sl'
+    assert branch.details == 'short note edited branch'
+    assert branch.visit_days == THURSDAY
+    assert branch.visit_hour_from == datetime.time(7, 0)
+    assert branch.visit_hour_to == datetime.time(17, 0)
+    
+
+@pytest.mark.django_db
+def test_add_product(client, logged_user_everymodel):
+    
+    assert len(Product.objects.all()) == 6
+
+    response = client.post(f'/products/add/', {
+        'name': 'name of product',
+        'description': 'some description',
+        'active_substance': 'anything'
+    })
+    
+    assert response.status_code == 302
+    assert len(Product.objects.all()) == 7
+    product = Product.objects.get(name = 'name of product')
+    assert product.description == 'some description'
+    assert product.active_substance == 'anything'
+    

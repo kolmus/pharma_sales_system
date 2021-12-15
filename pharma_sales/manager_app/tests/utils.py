@@ -2,7 +2,7 @@
 
 from django.contrib.auth.models import Permission, User
 
-from manager_app.models import BIG_PHARM, FAMILY_PHARM, Branch, Client, Employee, REGISTER_ADRESS, FRIDAY
+from manager_app.models import BIG_PHARM, FAMILY_PHARM, Branch, Client, Employee, REGISTER_ADRESS, FRIDAY, Product
 
 
 def create_supervisor(username, password):
@@ -166,3 +166,22 @@ def create_branch(client, employee):
     branch2.visit_hour_from = '08:00:00'
     branch2.visit_hour_to = '16:00:00'
     branch2.save()
+    
+    return branch
+
+def create_product(number):
+    
+    new_product1 = Product()
+    new_product1.name = f'product'
+    new_product1.description = f'description'
+    new_product1.active_substance = f'substance'
+    new_product1.save()
+    for i in range (number-1):
+        
+        new_product = Product()
+        new_product.name = f'product{i}'
+        new_product.description = f'description{i}'
+        new_product.active_substance = f'substance{i}'
+        new_product.save()
+        
+    return new_product1
