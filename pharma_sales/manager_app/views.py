@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views import View
 from django.urls import reverse_lazy
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 from .forms import ClientForm, LoginForm, EmployeeAddForm, EmployeeEditForm, VariantForm, CartForm, CalendarForm
 from .models import CREATING_ST, ORDER_STATUS, Batch, CalendarSupervisor, Client, Employee, Branch, Product, Variant, Order, Cart, CLIENT_TYPE, WEEKDAY
@@ -562,7 +562,7 @@ class VariantUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
             return redirect('/products/')
         else:
             return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
-        
+        test_add_batch
 
 class BatchCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
@@ -593,12 +593,14 @@ class OrderCartCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
         if form.is_valid():
             # create order
             today = date.today()
+            hour, minute, second = (x for x in str(datetime.now().time()).split(':'))
             order_number = '{}/{}/{}/{}'.format(
                 branch.id,
                 today.year,
                 today.month,
-                len(Order.objects.filter(branch=branch, date__year__gte=int(today.year), date__month__gte=int(today.month)))+1  # to change for something more uniq
+                f'{hour}{minute}{second}'
             )
+            
             order = Order.objects.create(
                 order_number=order_number,
                 branch=branch,
