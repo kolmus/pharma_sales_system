@@ -1,17 +1,15 @@
+
+
 from django.contrib.auth.models import Permission, User
-import pytest
 
-from manager_app.models import (
-    Employee
-)
-from manager_app.tests.utils import create_supervisor, create_employee
+from manager_app.models import Employee
 
-@pytest.fixture
-def three_exemple_users():
-    
+
+def create_supervisor(username, password):
+    print(password)
     user = User.objects.create_user(
-        username='supervisor_login',
-        password='supervisor_password',
+        username=username,
+        password=password,
         first_name='name1',
         last_name='surname1',
         email = 'exemple@anything.com'
@@ -67,10 +65,12 @@ def three_exemple_users():
         is_active=True,
         is_supervisor=True
     )
-    
+    return user
+
+def create_employee(username, password, supervisor):
     user2 = user = User.objects.create_user(
-        username='trader_login', 
-        password='trader_password', 
+        username=username, 
+        password=password, 
         first_name='name2',
         last_name='surname2',
         email = 'exemple2@anything.com'
@@ -100,52 +100,9 @@ def three_exemple_users():
     employee2 = Employee.objects.create(
       phone=123456789,
         role='Trader',
-        supervisor=employee,
+        supervisor=supervisor,
         user=user,
         is_active=True,
         is_supervisor=False
     )
-    
-    user3 = user = User.objects.create_user(
-        username='noperm_login', 
-        password='noperm_password', 
-        first_name='name3',
-        last_name='surname3',
-        email = 'exemple3@anything.com'
-    )
-
-    users = [user, user2, user3]
-    return users
-
-@pytest.fixture
-def logged_in_supervior_with_employee(client):
-    user = create_supervisor(username='supervisor', password="SecretPassword")
-    user2 = create_employee(username='trader', password="SecretPassword", supervisor=user.employee)
-    
-    
-    client.login(
-        username='supervisor',
-        password='SecretPassword',
-    )
-    print("####################" + str(user.employee.id))
-    print('###'+ user.username)
-    print("####################" + str(user2.employee.id))
-    
-    return client, user
-
-@pytest.fixture
-def logged_user_employee_client(client):
-    user = create_supervisor(username='supervisor', password="SecretPassword")
-    user2 = create_employee(username='trader', password="SecretPassword", supervisor=user.employee)
-    
-    
-    client.login(
-        username='supervisor',
-        password='SecretPassword',
-    )
-    print("####################" + str(user.employee.id))
-    print('###'+ user.username)
-    print(user.password)
-    print("####################" + str(user2.employee.id))
-    
-    return client, user
+    return user2
