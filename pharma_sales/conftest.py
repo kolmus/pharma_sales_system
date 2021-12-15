@@ -4,7 +4,7 @@ import pytest
 from manager_app.models import (
     Employee
 )
-from manager_app.tests.utils import create_batch, create_branch, create_cart_position, create_order, create_product, create_supervisor, create_employee, create_2clients, create_variant
+from manager_app.tests.utils import create_batch, create_branch, create_cart_position, create_order, create_product, create_supervisor, create_employee, create_2clients, create_variant, create_visit
 
 @pytest.fixture
 def three_exemple_users():
@@ -158,6 +158,7 @@ def trader_logged_user_everymodel(client):
     new_batch = create_batch(new_variant, 3)
     new_order = create_order(new_branch, 3)
     new_position = create_cart_position(new_order, new_batch)
+    new_visit = create_visit(new_branch, user2)
     
     
     
@@ -176,6 +177,7 @@ def trader_logged_user_everymodel(client):
     print('new batch id  ', new_batch.id)
     print('new order id   ', new_order.id)
     print('new position id   ', new_position.id)
+    print('new visit id   ', new_visit.id)
     print("####################" + str(user2.employee.id))
     
     return client, user2

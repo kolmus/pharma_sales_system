@@ -1,7 +1,6 @@
 
-
 from django.contrib.auth.models import Permission, User
-
+from trader_app.models import Localization, Visit
 from manager_app.models import (
     BIG_PHARM,
     FAMILY_PHARM,
@@ -210,7 +209,7 @@ def create_branch(client, employee):
     branch2.name_of_branch = 'name of branch2'
     branch2.zip_code = '01-336'
     branch2.province = 'province3'
-    branch2.city = 'city5'
+    branch2.city = 'city2'
     branch2.street = 'street7'
     branch2.building_number = '20205C'
     branch2.apartment_number = '12sa2l'
@@ -353,3 +352,30 @@ def create_cart_position(order, batch):
     position.quantity = 3
     position.save()
     return position
+
+def create_visit(branch, user):
+    """For Test
+    Creates 1 object of Visit modlue
+
+    Args:
+        branch (obj): Object of Branch model
+        user (obj): Object of User model
+
+    Returns:
+        Object: 1 new object of Visit Model
+    """    
+    visit = Visit()
+    visit.date = '2021-12-16'
+    visit.trader = user.employee
+    visit.client_branch = branch
+    visit.save()
+    return visit
+    
+    
+    
+    
+    
+    
+    
+    
+    

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, get_permission_codename, login, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic.edit import FormView, CreateView, ProcessFormView, UpdateView, DeleteView
+
 from django.views import View
 from datetime import date
 
@@ -59,7 +59,7 @@ class TraderLoginView(View):
                 return render(request, 'trader_app/login.html', {'form': form, 'answer': 'Błędny login lub hasło'})
         else: 
             return render(request, 'trader_app/login.html', {'form': form})
-        
+
 
 class TraderLogoutView(LoginRequiredMixin, View):
     """
@@ -68,8 +68,8 @@ class TraderLogoutView(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         return redirect("/trader/login/")
-    
-    
+
+
 class TraderDashboardView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for dashboard page
@@ -77,8 +77,8 @@ class TraderDashboardView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'trader_app.add_visit' 
     def get(self, request):
         return render(request, 'trader_app/dashboard.html')
-    
-    
+
+
 class TraderStartDayView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View starts day of work
@@ -111,8 +111,8 @@ class TraderPlaningDateView(LoginRequiredMixin, PermissionRequiredMixin, View):
             return redirect(f"/trader/planning/{form.cleaned_data['plan_date']}/{form.cleaned_data['city']}/")
         else:
             return render(request, 'trader_app/planning.html', {'form': form})
-    
-    
+
+
 class TraderPlaningVisitsView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View creates new visits.
@@ -128,8 +128,6 @@ class TraderPlaningVisitsView(LoginRequiredMixin, PermissionRequiredMixin, View)
             message = f'Brakuje Ci {12 - len(visits)} wizyt do celu'
         else:
             message = f'Zaplanowałeś {len(visits)} spotkań.'
-        
-        print(Branch.objects.filter(account_manager=request.user.employee, city=city))
         
         
         return render(request, 'trader_app/planning_visit_form.html', {
@@ -172,8 +170,8 @@ class TraderPlaningVisitsView(LoginRequiredMixin, PermissionRequiredMixin, View)
                 'form': form,
                 'message': message,
             })
-            
-            
+
+
 class TraderVisitDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
     permission_required = 'trader_app.delete_visit' 
     """
@@ -244,7 +242,7 @@ class TraderProductDetailsView(LoginRequiredMixin, PermissionRequiredMixin, View
         product = Product.objects.get(id=product_id)
         print(product.variant_set.all())
         return render(request, 'trader_app/product_details.html', {'product': product, 'visit_id': visit_id})
-    
+
 
 class TraderOrderCartCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """

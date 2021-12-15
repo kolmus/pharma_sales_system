@@ -1,11 +1,12 @@
 from django import forms
+from django.contrib.admin.widgets import AdminDateWidget
 
 from manager_app.models import ADRESS_TYPES, CLIENT_TYPE, WEEKDAY
 from .models import Visit
 
 class PlanDateForm(forms.Form):
     plan_date = forms.DateField(widget=forms.SelectDateWidget, label='Jaki dzień chcesz planować?', required=False)
-    city = forms.CharField(label='Wprowadź miejscowość', required=False)
+    city = forms.CharField(label='Wprowadź miejscowość',)
     
 class PlanAddVisitForm(forms.Form):
     
