@@ -2,7 +2,7 @@
 
 from django.contrib.auth.models import Permission, User
 
-from manager_app.models import Employee
+from manager_app.models import BIG_PHARM, FAMILY_PHARM, Branch, Client, Employee, REGISTER_ADRESS, FRIDAY
 
 
 def create_supervisor(username, password):
@@ -106,3 +106,63 @@ def create_employee(username, password, supervisor):
         is_supervisor=False
     )
     return user2
+
+def create_2clients(nip, nip2):
+    client = Client.objects.create(
+        nip = nip,
+        company_name = "company_name",
+        short_company_name = "cmp",
+        regon = 1478523,
+        krs = 14478955,
+        type = FAMILY_PHARM
+    )
+    
+    client2 = Client()
+    client2.nip = nip2
+    client2.company_name = "company_name2"
+    client2.regon = 1478723
+    client2.krs = 75379
+    client2.logo = None
+    client2.type = BIG_PHARM
+    client2.save()
+
+    
+    print(client)
+    print(client2)
+    return client2
+
+
+def create_branch(client, employee):
+    branch = Branch()
+    branch.client = client
+    branch.type = REGISTER_ADRESS
+    branch.name_of_branch = 'name of branch2'
+    branch.zip_code = '01-236'
+    branch.province = 'province2'
+    branch.city = 'city2'
+    branch.street = 'street2'
+    branch.building_number = '2020C'
+    branch.apartment_number = '122l'
+    branch.details = 'short notehjk'
+    branch.account_manager = employee
+    branch.visit_days = FRIDAY
+    branch.visit_hour_from = '08:00:00'
+    branch.visit_hour_to = '16:00:00'
+    branch.save()
+    
+    branch2 = Branch()
+    branch2.client = client
+    branch2.type = REGISTER_ADRESS
+    branch2.name_of_branch = 'name of branch2'
+    branch2.zip_code = '01-336'
+    branch2.province = 'province3'
+    branch2.city = 'city5'
+    branch2.street = 'street7'
+    branch2.building_number = '20205C'
+    branch2.apartment_number = '12sa2l'
+    branch2.details = 'short notasehjk'
+    branch2.account_manager = employee
+    branch2.visit_days = FRIDAY
+    branch2.visit_hour_from = '08:00:00'
+    branch2.visit_hour_to = '16:00:00'
+    branch2.save()

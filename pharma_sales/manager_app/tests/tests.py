@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 
+import datetime
 import pytest
 
-from manager_app.models import Employee
+from manager_app.models import Employee, Client, FRIDAY, REGISTER_ADRESS, Branch
 
 @pytest.mark.django_db
 def test_login_page(client, three_exemple_users):
@@ -22,7 +23,7 @@ def test_login_page(client, three_exemple_users):
     assert response.status_code == 403
     
 @pytest.mark.django_db
-def test_dashbord_page(client, logged_in_supervior_with_employee):
+def test_dashbord_page(client, logged_user_everymodel):
     response = client.post('/', {'employee': '2', 'note': '6543gfd', 'date_cal': '2021-12-15 Środa'})
     assert response.status_code == 302
     
@@ -36,7 +37,7 @@ def test_dashbord_page(client, logged_in_supervior_with_employee):
     assert response.status_code == 302
 
 @pytest.mark.django_db
-def test_create_employee_page(client, logged_in_supervior_with_employee):  
+def test_create_employee_page(client, logged_user_everymodel):  
     user = User.objects.get(username='supervisor')
 
 
@@ -81,7 +82,7 @@ def test_create_employee_page(client, logged_in_supervior_with_employee):
     
     
 @pytest.mark.django_db
-def test_edit_employee_page(client, logged_in_supervior_with_employee):   # form to repair
+def test_edit_employee_page(client, logged_user_everymodel):   # form to repair
     user = User.objects.get(username='supervisor')
     employee = Employee.objects.filter(is_supervisor=False)[0]
     emp_id = employee.id
@@ -132,5 +133,45 @@ def test_edit_employee_page(client, logged_in_supervior_with_employee):   # form
     assert response.status_code == 200
 
 @pytest.mark.django_db
+def test_branch_create(client, logged_user_everymodel):
+    user = User.objects.get(username='supervisor')
+    employee = Employee.objects.filter(is_supervisor=False)[0]
+    client_in_base = Client.objects.all()[0]
+    client_id = client_in_base.id
+    print(employee.id)
+    response = client.post(f'/branch/add/', {
+        'client': client_in_base.id,
+        'type': REGISTER_ADRESS,
+        'name_of_branch': 'name of branch',
+        'zip_code': '01-234',
+        'province': 'province',
+        'city': 'city',
+        'street': 'street',
+        'building_number': '200C',
+        'apartment_number': '12l',
+        'details': 'short note',
+        'account_manager': employee.id,
+        'visit_days': FRIDAY,
+        'visit_hour_from': '08:00:00',
+        'visit_hour_to': '16:00:00'
+    })
+    
 
+    assert response.status_code == 302
+    branch = Branch.objects.get(client=client_in_base)
+    assert branch.type == REGISTER_ADRESS
+    assert branch.name_of_branch == 'name of branch'
+    assert branch.zip_code == '01-234'
+    assert branch.province == 'province'
+    assert branch.city == 'city'
+    assert branch.street == 'street'
+    assert branch.building_number == '200C'
+    assert branch.apartment_number == '12l'
+    assert branch.details == 'short note'
+    assert branch.visit_days == FRIDAY
+    assert branch.visit_hour_from == datetime.time(8, 0)
+    assert branch.visit_hour_to == datetime.time(16, 0)
 
+@pytest.mark.django_db
+def test_edit_branch(client, logged_user_everymodel):
+    pass

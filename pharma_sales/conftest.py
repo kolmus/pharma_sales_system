@@ -4,7 +4,7 @@ import pytest
 from manager_app.models import (
     Employee
 )
-from manager_app.tests.utils import create_supervisor, create_employee
+from manager_app.tests.utils import create_branch, create_supervisor, create_employee, create_2clients
 
 @pytest.fixture
 def three_exemple_users():
@@ -117,35 +117,24 @@ def three_exemple_users():
     users = [user, user2, user3]
     return users
 
-@pytest.fixture
-def logged_in_supervior_with_employee(client):
-    user = create_supervisor(username='supervisor', password="SecretPassword")
-    user2 = create_employee(username='trader', password="SecretPassword", supervisor=user.employee)
-    
-    
-    client.login(
-        username='supervisor',
-        password='SecretPassword',
-    )
-    print("####################" + str(user.employee.id))
-    print('###'+ user.username)
-    print("####################" + str(user2.employee.id))
-    
-    return client, user
 
 @pytest.fixture
-def logged_user_employee_client(client):
+def logged_user_everymodel(client):
     user = create_supervisor(username='supervisor', password="SecretPassword")
     user2 = create_employee(username='trader', password="SecretPassword", supervisor=user.employee)
-    
+    new_client = create_2clients(nip=5222851, nip2=45876321)
+    new_branch = create_branch(new_client, user2.employee)
     
     client.login(
         username='supervisor',
         password='SecretPassword',
     )
+    
     print("####################" + str(user.employee.id))
-    print('###'+ user.username)
+    print(user.username)
     print(user.password)
+    print(new_client.id)
+    
     print("####################" + str(user2.employee.id))
     
     return client, user

@@ -91,7 +91,7 @@ class Employee(models.Model):
 
 
 class Client(models.Model):
-    nip = models.IntegerField(verbose_name='NIP')
+    nip = models.BigIntegerField(verbose_name='NIP')
     company_name = models.CharField(max_length=128, verbose_name='Nazwa firmy')
     short_company_name = models.CharField(max_length=16, verbose_name='Skrócona nazwa', null=True)
     logo = models.ImageField(upload_to='media/img/client/logo/', null=True)
@@ -116,8 +116,8 @@ class Branch(models.Model):
     details = models.TextField(verbose_name='Szczególne informacje', null=True)
     account_manager = models.ForeignKey(Employee, on_delete=models.SET_NULL, verbose_name="Opiekun klienta", null=True)
     visit_days = models.IntegerField(choices=WEEKDAY, verbose_name="Wizyty w dni tygodnia")
-    visit_hour_from = models.TimeField(auto_now=False, verbose_name='Wizyty od godziny', null=True, default='08:00')
-    visit_hour_to = models.TimeField(auto_now=False, verbose_name="Wizyty do godziny", null=True, default ='16:00')
+    visit_hour_from = models.TimeField(auto_now=False, verbose_name='Wizyty od godziny', null=True, default='08:00:00')
+    visit_hour_to = models.TimeField(auto_now=False, verbose_name="Wizyty do godziny", null=True, default ='16:00:00')
     
     def __str__(self):
         return f'{self.client} - {self.name_of_branch}'
