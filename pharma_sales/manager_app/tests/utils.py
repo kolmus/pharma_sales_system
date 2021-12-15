@@ -2,7 +2,7 @@
 
 from django.contrib.auth.models import Permission, User
 
-from manager_app.models import BIG_PHARM, FAMILY_PHARM, Branch, Client, Employee, REGISTER_ADRESS, FRIDAY, Product, Variant
+from manager_app.models import BIG_PHARM, FAMILY_PHARM, Branch, Client, Employee, REGISTER_ADRESS, FRIDAY, Product, Variant, Batch
 
 
 def create_supervisor(username, password):
@@ -77,6 +77,17 @@ def create_supervisor(username, password):
     return user
 
 def create_employee(username, password, supervisor):
+    """For Tests
+    creates user vitr trader permitions.
+    
+    Args:
+        username ([str]): [new username]
+        password ([str]): [secret password ]
+        supervisor ([object]): [model Employee]
+
+    Returns:
+        [object]: [Auth User Model]
+    """    
     user2 = user = User.objects.create_user(
         username=username, 
         password=password, 
@@ -117,6 +128,16 @@ def create_employee(username, password, supervisor):
     return user2
 
 def create_2clients(nip, nip2):
+    """For Tests
+    creates 2 objects of Client model
+
+    Args:
+        nip ([int]): [int or bigint]
+        nip2 ([int]): [int or bigint]
+
+    Returns:
+        [object]: Model Client object with nip2
+    """    
     client = Client.objects.create(
         nip = nip,
         company_name = "company_name",
@@ -140,8 +161,18 @@ def create_2clients(nip, nip2):
     print(client2)
     return client2
 
-
 def create_branch(client, employee):
+    """For Tests
+    
+    Creates new Branch model
+
+    Args:
+        client ([obj]): [Model Client]
+        employee ([obj]): [Model Employ, permissions as trader]
+
+    Returns:
+        [object]: [New object of model Branch]
+    """    
     branch = Branch()
     branch.client = client
     branch.type = REGISTER_ADRESS
@@ -179,23 +210,40 @@ def create_branch(client, employee):
     return branch
 
 def create_product(number):
-    
+    """For Tests
+     
+     Creates new object of Product Model
+    Args:
+        number ([int]): number of new objects
+
+    Returns:
+        [object]: [New object of Product Model]
+    """    
     new_product1 = Product()
     new_product1.name = f'product'
     new_product1.description = f'description'
     new_product1.active_substance = f'substance'
     new_product1.save()
     for i in range (number-1):
-        
         new_product = Product()
         new_product.name = f'product{i}'
         new_product.description = f'description{i}'
         new_product.active_substance = f'substance{i}'
         new_product.save()
-        
     return new_product1
 
 def create_variant(product, number):
+    """For Tests
+
+    Creates new object of Variant Model
+
+    Args:
+        product (obj): Model Product
+        number (int): number of new objects
+
+    Returns:
+        object: New object of Varian Model
+    """    
     variant = Variant()
     variant.dose = 1
     variant.unit = 1
@@ -204,7 +252,7 @@ def create_variant(product, number):
     variant.is_active = True
     variant.save()
     
-    for i in range(number):
+    for i in range(number - 1):
         variant1 = Variant()
         variant1.dose = 1 + i
         variant1.unit = 1 + i
@@ -214,8 +262,41 @@ def create_variant(product, number):
         variant1.save()
     return variant
         
-        
-        
+def create_batch(variant, number):
+    """For Tests
+
+    Creates new object of Batch Model
+
+    Args:
+        variant (obj): Model Variant
+        number (int): number of new objects
+
+    Returns:
+        object: New object of Varian Model
+    """    
+    batch = Batch()
+    batch.number = 'batch number'
+    batch.ean = = 147852
+    batch.expiration_date = '2022-01-30'
+    batch.netto = 400.31
+    batch.vat = 1
+    batch.quantity = 4000
+    batch.variant = variant
+    batch.is_active = True
+    batch.save()
+    
+    for i in range(number - 1):
+        batch = Batch()
+        batch.number = f'batch number{i}'
+        batch.ean = 147852
+        batch.expiration_date = '2022-01-30'
+        batch.netto = 400.31 + i * 10
+        batch.vat = 1
+        batch.quantity = 4000 + i * 100
+        batch.variant = variant
+        batch.is_active = True
+        batch.save()
+    return batch
         
         
         

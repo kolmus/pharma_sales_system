@@ -4,7 +4,7 @@ import datetime
 from django.http import response
 import pytest
 
-from manager_app.models import THURSDAY, Employee, Client, FRIDAY, REGISTER_ADRESS, Branch, Product, Variant
+from manager_app.models import THURSDAY, Employee, Client, FRIDAY, REGISTER_ADRESS, Branch, Product, Variant, Batch
 
 @pytest.mark.django_db
 def test_login_page(client, three_exemple_users):
@@ -267,4 +267,12 @@ def test_edit_product(client, logged_user_everymodel):
     assert product.name == 'name of product test2'
     assert product.description == 'some description test2'
     assert product.active_substance == 'anything test2'
+    
+@pytest.mark.django_db
+def test_add_batch(client, logged_user_everymodel):
+    
+    variant = Variant.objects.all()[0]
+    var_id = variant.id
+    
+    assert len(Batch.objects.all()) == 4
     

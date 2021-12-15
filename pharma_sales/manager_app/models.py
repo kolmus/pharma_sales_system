@@ -160,7 +160,7 @@ class Variant(models.Model):
 
 class Batch(models.Model):
     number = models.CharField(max_length=32, verbose_name="numer Partii")
-    ean = models.IntegerField(verbose_name='EAN')
+    ean = models.BigIntegerField(verbose_name='EAN')
     expiration_date = models.DateField(verbose_name="data Przydatności do użycia")
     netto = models.FloatField(verbose_name="cena netto")
     vat = models.IntegerField(choices=VAT, verbose_name='Starka podatku vat')
