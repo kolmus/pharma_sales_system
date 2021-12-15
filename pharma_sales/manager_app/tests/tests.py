@@ -4,8 +4,30 @@ import datetime
 from django.http import response
 import pytest
 
-from manager_app.models import CREATING_ST, THURSDAY, Employee, Client, FRIDAY, REGISTER_ADRESS, Branch, Product, Variant, Batch, Order, Cart
-
+from manager_app.models import (
+    THURSDAY,
+    Employee,
+    Client,
+    FRIDAY,
+    REGISTER_ADRESS,
+    Branch,
+    Product,
+    Variant,
+    Batch,
+    Order,
+    Cart,
+    CREATING_ST,
+    TO_VERIFY_ST,
+    WAIT_FOR_PAY_ST,
+    ACCEPTED_ST,
+    TO_DELIVER_ST,
+    PROBLEM_ST,
+    IN_DELIVERY_ST,
+    NOT_PAYED_ST,
+    ENDED_ST
+    
+    
+)
 @pytest.mark.django_db
 def test_login_page(client, three_exemple_users):
     response = client.post('/login/', {'login': 'sdfghj', 'password': 'zsexdrcftvgybnujim'})
@@ -38,7 +60,7 @@ def test_dashbord_page(client, logged_user_everymodel):
     assert response.status_code == 302
 
 @pytest.mark.django_db
-def test_create_employee_page(client, logged_user_everymodel):  
+def test_create_employee_page(client, logged_user_everymodel):
     user = User.objects.get(username='supervisor')
 
 
@@ -349,5 +371,46 @@ def test_delete_position_from_cart(client, logged_user_everymodel):
     assert len(order.cart_set.all()) == positions - 1
     assert len(Cart.objects.filter(id = pos_id)) == 0
     
+@pytest.mark.django_db
+def test_update_order_status(client, logged_user_everymodel):
+    order = Order.objects.all()[0]
+    ord_id = order.id
     
+    response = client.post(f'/orders/{ord_id}/status/{CREATING_ST}/')
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == CREATING_ST
+    response = client.post(f'/orders/{ord_id}/status/{TO_VERIFY_ST}/')
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == TO_VERIFY_ST
+    response = client.post(f'/orders/{ord_id}/status/{WAIT_FOR_PAY_ST}/')
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == WAIT_FOR_PAY_ST
+    response = client.post(f'/orders/{ord_id}/status/{ACCEPTED_ST}/')
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == ACCEPTED_ST
+    response = client.post(f'/orders/{ord_id}/status/{TO_DELIVER_ST}/')
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == TO_DELIVER_ST
+    response = client.post(f'/orders/{ord_id}/status/{PROBLEM_ST}/')
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == PROBLEM_ST
+    response = client.post(f'/orders/{ord_id}/status/{IN_DELIVERY_ST}/')
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == IN_DELIVERY_ST
+    response = client.post(f'/orders/{ord_id}/status/{NOT_PAYED_ST}/')
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == NOT_PAYED_ST
+    response = client.post(f'/orders/{ord_id}/status/{ENDED_ST}/')
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == ENDED_ST
     
+@pytest.mark.django_db
+def test_order_delete(client, logged_user_everymodel):
+    orders = Order.objects.all()
+    ord_id = orders[0].id
+    len_orders = len(orders)
+    response = client.post(f'/orders/{ord_id}/delete/')
+    orders = Order.objects.all()
+    assert len(orders) == len_orders -1
+    assert len(Order.objects.filter(id = ord_id)) == 0
+

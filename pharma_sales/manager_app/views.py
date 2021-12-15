@@ -301,7 +301,7 @@ class EmployeeDetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
         })
 
 
-class EmployeeEditView(LoginRequiredMixin, View):
+class EmployeeEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for modify Empployee models
 
@@ -414,7 +414,7 @@ class ClientListView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return render(request, 'manager_app/clients.html', {'traders': traders})
     
     
-class ClientUpdateView(LoginRequiredMixin, UpdateView):
+class ClientUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     View for update Client
     """
