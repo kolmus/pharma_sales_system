@@ -377,30 +377,39 @@ def test_update_order_status(client, logged_user_everymodel):
     ord_id = order.id
     
     response = client.post(f'/orders/{ord_id}/status/{CREATING_ST}/')
+    assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == CREATING_ST
     response = client.post(f'/orders/{ord_id}/status/{TO_VERIFY_ST}/')
+    assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == TO_VERIFY_ST
     response = client.post(f'/orders/{ord_id}/status/{WAIT_FOR_PAY_ST}/')
+    assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == WAIT_FOR_PAY_ST
     response = client.post(f'/orders/{ord_id}/status/{ACCEPTED_ST}/')
+    assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == ACCEPTED_ST
     response = client.post(f'/orders/{ord_id}/status/{TO_DELIVER_ST}/')
+    assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == TO_DELIVER_ST
     response = client.post(f'/orders/{ord_id}/status/{PROBLEM_ST}/')
+    assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == PROBLEM_ST
     response = client.post(f'/orders/{ord_id}/status/{IN_DELIVERY_ST}/')
+    assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == IN_DELIVERY_ST
     response = client.post(f'/orders/{ord_id}/status/{NOT_PAYED_ST}/')
+    assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == NOT_PAYED_ST
     response = client.post(f'/orders/{ord_id}/status/{ENDED_ST}/')
+    assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == ENDED_ST
     
@@ -411,6 +420,32 @@ def test_order_delete(client, logged_user_everymodel):
     len_orders = len(orders)
     response = client.post(f'/orders/{ord_id}/delete/')
     orders = Order.objects.all()
+    assert response.status_code == 302
     assert len(orders) == len_orders -1
     assert len(Order.objects.filter(id = ord_id)) == 0
 
+@pytest.mark.django_db
+def test_order_modify (client, logged_user_everymodel):
+    order = Order.objects.all()[0]
+    ord_id = order.id
+    assert order.order_number != "Nowy numer do zamówienia"
+    assert order.branch != 5
+    bran_id = order.branch.id
+    response = client.post(f'/orders/{ord_id}/cs/', {
+        'order_number': 'Nowy numer do zamówienia',
+        'discount': 5
+    })
+    
+    assert response.status_code == 200
+    
+    response = client.post(f'/orders/{ord_id}/cs/', {
+        'order_number': 'Nowy numer do zamówienia',
+        'branch': bran_id,
+        'discount': 5
+    })
+    
+    order = Order.objects.get(id = ord_id)
+    assert order.order_number == "Nowy numer do zamówienia"
+    assert order.discount == 5
+    assert order.branch == Branch.objects.get(id=bran_id)
+    
