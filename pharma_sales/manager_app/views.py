@@ -594,6 +594,7 @@ class OrderCartCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
             # create order
             today = date.today()
             hour, minute, second = (x for x in str(datetime.now().time()).split(':'))
+            second = second.split('.')[0]
             order_number = '{}/{}/{}/{}'.format(
                 branch.id,
                 today.year,
@@ -731,7 +732,7 @@ class OrderCSModifyView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     permission_required = 'manager_app.change_order'
     
     model = Order
-    fields = ['order_number', 'branch', 'invoice', 'discount']
+    fields = ['order_number', 'branch', 'discount']
     success_url = '/orders/'
 
 
