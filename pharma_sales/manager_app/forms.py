@@ -15,7 +15,7 @@ class EmployeeAddForm (forms.Form):
     last_name = forms.CharField(label='Nazwisko')
     username = forms.CharField(label='Nazwa użytkownia')
     email = forms.EmailField(label='Email')
-    phone = forms.CharField(label='Numer telefonu')
+    phone = forms.IntegerField(label='Numer telefonu')
     password1 = forms.CharField(label='Nowe hasło', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Powtórz nowe hasło', widget=forms.PasswordInput, )
     role = forms.CharField(label='Stanowisko')
@@ -27,6 +27,8 @@ class EmployeeAddForm (forms.Form):
         pass2 = cleaned_data.get('password2')
         if pass1 != pass2:
             raise forms.ValidationError('Hasła nie są takie same!')
+        if not pass1 or not pass2:
+            raise forms.ValidationError('hasła nie mogą być puste')
         return cleaned_data
 
 
@@ -44,12 +46,12 @@ class PasswordResetForm(forms.Form):
 
 
 class EmployeeEditForm(forms.Form):
-    first_name = forms.CharField(label='Imię', )
+    first_name = forms.CharField(label='Imię')
     last_name = forms.CharField(label='Nazwisko')
     email = forms.EmailField(label='Email')
-    phone = forms.CharField(label='Numer telefonu')
+    phone = forms.IntegerField(label='Numer telefonu')
     role = forms.CharField(label='Stanowisko')
-    supervisor = forms.ModelChoiceField(queryset=Employee.objects.all(), empty_label='supervisor', label='Przełożony', required=False)
+    supervisor = forms.ModelChoiceField(queryset=Employee.objects.filter(is_supervisor=True), empty_label='supervisor', label='Przełożony', required=False)
     
 
 class ClientForm(forms.ModelForm):

@@ -1,5 +1,4 @@
-from django.db.models import fields
-from django.http import request
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -231,6 +230,8 @@ class EmployeeCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
                 supervisor=form.cleaned_data['supervisor'],
                 user=new_user
             )
+            
+            
             return redirect(f'/employees/{new_employee.id}/')
         else:
             return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
@@ -327,21 +328,29 @@ class EmployeeEditView(LoginRequiredMixin, View):
         return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Edycja Pracownika'})
     
     def post(self, request, id_):
-        form = EmployeeAddForm(request.POST)
+        form = EmployeeEditForm(request.POST)
         if form.is_valid():
             edited_user = Employee.objects.get(id=id_).user
-            User.objects.update(
-                email=form.cleaned_data['email'],
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
-            )
-            edited_employee = Employee.objects.create(
-                phone=form.cleaned_data['phone'],
-                role=form.cleaned_data['role'],
-                supervisor=form.cleaned_data['supervisor'],
-                user=edited_user
-            )
-            return redirect(f'/employee/{edited_employee.id}/')
+            edited_user.email = form.cleaned_data['email']
+            edited_user.first_name = form.cleaned_data['first_name']
+            edited_user.last_name = form.cleaned_data['last_name']
+
+            edited_user.save()
+            
+            edited_employee = edited_user.employee
+
+            edited_employee.phone = form.cleaned_data['phone']
+
+            edited_employee.role = form.cleaned_data['role']
+
+
+            edited_employee.supervisor = form.cleaned_data['supervisor']
+            edited_employee.save()
+            
+            
+
+            
+            return redirect(f'/employees/{edited_employee.id}/')
         else:
             return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
         
