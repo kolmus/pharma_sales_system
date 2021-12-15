@@ -4,7 +4,12 @@
         {% for status, st_orders in orders.items  %}
             <dt>{{ status }}</dt>
             {% for order in st_orders %}
-                <dd>{{order}} <a href="/orders/{{order.id}}/cs/"><button type="button">Obsłuż zamówienie</button></a><a href="/orders/{{order.id}}/delete/"><button type="button">Anuluj zamówienie</button></a></dd>
+                <dd>
+                    {{order}} 
+                    <a href="/orders/{{order.id}}/cs/"><button type="button">Obsłuż zamówienie</button></a>
+                    <form method="post" action="/orders/{{order.id}}/delete/">
+                        {% csrf_token %}
+                        <button type="submit">Anuluj zamówienie</button></form></dd>
                 {% empty %}
                 <dd>Brak zamówień o tym statusie</dd>
             {% endfor %}

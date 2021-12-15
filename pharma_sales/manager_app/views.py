@@ -666,13 +666,13 @@ class CartModifyView(LoginRequiredMixin, PermissionRequiredMixin, View):
             'positions': positions,
             'order': order
         })
-        
-        
-class CartDeleteView(LoginRequiredMixin, View):
+
+
+class CartDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View remove positiom from Cart
     """
-    permission_required = 'manager_app.add_cart'
+    permission_required = 'manager_app.delete_cart'
     
     def post(self, request, order_id, position_id):
         position = Cart.objects.get(id=position_id)
@@ -701,14 +701,14 @@ class OrderDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     permission_required = 'manager_app.change_order'
     
-    def get(self, request, order_id):
+    def post(self, request, order_id):
         order = Order.objects.get(id=order_id)
         order.delete()
         
         return redirect(f'/orders/')
 
 
-class OrderListView(LoginRequiredMixin, PermissionRequiredMixin,View):
+class OrderListView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     Lists of all Orders without ended
     """

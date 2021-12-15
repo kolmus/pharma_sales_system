@@ -2,7 +2,21 @@
 
 from django.contrib.auth.models import Permission, User
 
-from manager_app.models import BIG_PHARM, FAMILY_PHARM, Branch, Client, Employee, REGISTER_ADRESS, FRIDAY, Product, Variant, Batch
+from manager_app.models import (
+    BIG_PHARM,
+    FAMILY_PHARM,
+    Branch,
+    Client,
+    Employee,
+    REGISTER_ADRESS,
+    FRIDAY,
+    Product,
+    Variant,
+    Batch,
+    Order,
+    Cart,
+    
+)
 
 
 def create_supervisor(username, password):
@@ -242,21 +256,21 @@ def create_variant(product, number):
         number (int): number of new objects
 
     Returns:
-        object: New object of Varian Model
+        object: New object of Variant Model
     """    
     variant = Variant()
     variant.dose = 1
     variant.unit = 1
-    variant.in_package = 20,
+    variant.in_package = 20
     variant.product = product
     variant.is_active = True
     variant.save()
     
     for i in range(number - 1):
         variant1 = Variant()
-        variant1.dose = 1 + i
-        variant1.unit = 1 + i
-        variant1.in_package = 20 +i,
+        variant1.dose = (1 + i)
+        variant1.unit = (1 + i)
+        variant1.in_package = (20 + i)
         variant1.product = product
         variant1.is_active = True
         variant1.save()
@@ -272,11 +286,11 @@ def create_batch(variant, number):
         number (int): number of new objects
 
     Returns:
-        object: New object of Varian Model
+        object: New object of Batch Model
     """    
     batch = Batch()
     batch.number = 'batch number'
-    batch.ean = = 147852
+    batch.ean = 147852
     batch.expiration_date = '2022-01-30'
     batch.netto = 400.31
     batch.vat = 1
@@ -298,6 +312,44 @@ def create_batch(variant, number):
         batch.save()
     return batch
         
-        
-        
-        
+def create_order(branch, number):
+    """For Tests
+
+    Creates new object of Order Model
+
+    Args:
+        branch (obj): Model Branch
+        number (int): number of new objects
+
+    Returns:
+        object: New object of Order Model
+    """    
+    order = Order()
+    order.order_number = 'Order number'
+    order.branch = branch
+    order.save()
+    
+    for i in range(number - 1):
+        order1 = Order()
+        order1.order_number = f'Order number {i}'
+        order1.branch = branch
+        order1.save()
+    return order
+    
+def create_cart_position(order, batch):
+    """For Tests
+
+    Creates new object of Cart Model
+
+    Args:
+        order (obj): Model Order
+
+    Returns:
+        object: New object of Cart Model
+    """    
+    position = Cart()
+    position.order = order
+    position.batch = batch
+    position.quantity = 3
+    position.save()
+    return position

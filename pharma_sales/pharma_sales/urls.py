@@ -71,7 +71,6 @@ from trader_app.views import (
     
 )
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', LoginView.as_view()),

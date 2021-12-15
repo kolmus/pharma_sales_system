@@ -4,7 +4,7 @@ import datetime
 from django.http import response
 import pytest
 
-from manager_app.models import THURSDAY, Employee, Client, FRIDAY, REGISTER_ADRESS, Branch, Product, Variant, Batch
+from manager_app.models import CREATING_ST, THURSDAY, Employee, Client, FRIDAY, REGISTER_ADRESS, Branch, Product, Variant, Batch, Order, Cart
 
 @pytest.mark.django_db
 def test_login_page(client, three_exemple_users):
@@ -140,7 +140,7 @@ def test_branch_create(client, logged_user_everymodel):
     client_in_base = Client.objects.all()[0]
     client_id = client_in_base.id
     
-    assert len(Branch.objects.filter(name_of_branch='name of branch')) == False
+    assert len(Branch.objects.filter(name_of_branch='name of branch')) == 0
     print(employee.id)
     response = client.post(f'/branch/add/', {
         'client': client_id,
@@ -274,5 +274,80 @@ def test_add_batch(client, logged_user_everymodel):
     variant = Variant.objects.all()[0]
     var_id = variant.id
     
+    assert len(Batch.objects.all()) == 3
+    assert len(Batch.objects.filter(number = 'new batch number')) == 0
+    
+    response = client.post(f'/batch/add/', {
+        'number': 'new batch number',
+        'ean': 1478523,
+        'expiration_date': '2022-01-30',
+        'netto': 400.31,
+        'vat': 1,
+        'quantity': 4000,
+        'variant': variant.id,
+        'is_active': True,
+    })
+    assert response.status_code == 302
     assert len(Batch.objects.all()) == 4
+    batch = Batch.objects.get(number = 'new batch number')
+    assert batch.ean == 1478523
+    assert batch.expiration_date == datetime.date(2022, 1, 30)
+    assert batch.netto == 400.31
+    assert batch.vat == 1
+    assert batch.quantity == 4000
+    assert batch.variant == variant
+    assert batch.is_active == True
+    
+@pytest.mark.django_db
+def test_add_Order_and_cart(client, logged_user_everymodel):
+    branch = Branch.objects.all()[0]
+    bran_id = branch.id
+    variant = Variant.objects.all()[0]
+    var_id = variant.id
+    
+    orders = len(Order.objects.all())
+    carts = len(Cart.objects.all())
+    
+    response = client.post(f'/branch/{bran_id}/orders/add/', {
+        'variant': var_id,
+        'quantity': 1
+    })
+    assert response.status_code == 302
+    assert len(Order.objects.all()) == orders + 1
+    assert len(Cart.objects.all()) == carts + 1
+
+@pytest.mark.django_db
+def test_add_position_to_cart(client, logged_user_everymodel):
+    order = Order.objects.filter(order_status = CREATING_ST)[0]
+    positions = len(order.cart_set.all())
+    branch = order.branch
+    bran_id = branch.id
+    ord_id = order.id
+    variant = Variant.objects.all()[0]
+    var_id = variant.id
+    
+    response = client.post(f'/branch/{bran_id}/orders/{ord_id}/', {
+        'variant': var_id,
+        'quantity': 1
+    })
+
+    assert response.status_code == 200
+    assert len(order.cart_set.all()) == positions + 1
+    
+@pytest.mark.django_db
+def test_delete_position_from_cart(client, logged_user_everymodel):
+    order = Order.objects.filter(order_status = CREATING_ST)[0]
+    positions = len(order.cart_set.all())
+    position = order.cart_set.all()[0]
+    pos_id = position.id
+    ord_id = order.id
+    
+    response = client.post(f'/orders/{ord_id}/delete/{pos_id}/')
+    print(response.content)
+    order = Order.objects.get(id=ord_id)
+    assert response.status_code == 302
+    assert len(order.cart_set.all()) == positions - 1
+    assert len(Cart.objects.filter(id = pos_id)) == 0
+    
+    
     
