@@ -20,7 +20,7 @@ from .forms import ClientByNipForm, PlanDateForm, PlanAddVisitForm, MakeVisitFor
 
 
 def save_coordinates(request, note):
-    """function saves gps coordinates in Localization motel
+    """Function saves gps coordinates in Localization model
 
     Args:
         request (object): from View 
@@ -70,11 +70,11 @@ class TraderLogoutView(LoginRequiredMixin, View):
         return redirect("/trader/login/")
     
     
-class TraderDashboardView(LoginRequiredMixin, View):
+class TraderDashboardView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View for dashboard page
     """
-    
+    permission_required = 'trader_app.add_visit' 
     def get(self, request):
         return render(request, 'trader_app/dashboard.html')
     

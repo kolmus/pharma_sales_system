@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 
 import datetime
-from django.http import response
 import pytest
 
 from manager_app.models import (

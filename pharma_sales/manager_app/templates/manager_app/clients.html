@@ -7,7 +7,7 @@
         <dt>{{ employee }}</dt>
         {% for branch in employee.branch_set.all %}
             <dd>
-                <a href="/clients/{{branch.client.id}}/"> {{branch }}</a>
+                <a href="/clients/{{branch.client.id}}/"> <img  src="{{branch.client.logo}}"> {{branch }}</a>
                 <a href="/branch/edit/{{branch.id}}/">
                     <button>Edytuj oddział</button>
                 </a>

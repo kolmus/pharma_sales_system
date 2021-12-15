@@ -52,10 +52,6 @@ def three_exemple_users():
     user.user_permissions.add(Permission.objects.get(codename='change_variant'))
     user.user_permissions.add(Permission.objects.get(codename='delete_variant'))
     user.user_permissions.add(Permission.objects.get(codename='view_variant'))
-    user.user_permissions.add(Permission.objects.get(codename='add_visit'))
-    user.user_permissions.add(Permission.objects.get(codename='change_visit'))
-    user.user_permissions.add(Permission.objects.get(codename='delete_visit'))
-    user.user_permissions.add(Permission.objects.get(codename='view_visit'))
     user.user_permissions.add(Permission.objects.get(codename='add_user'))
     user.user_permissions.add(Permission.objects.get(codename='add_permission'))
 
@@ -150,4 +146,37 @@ def logged_user_everymodel(client):
     print("####################" + str(user2.employee.id))
     
     return client, user
+
+@pytest.fixture
+def trader_logged_user_everymodel(client):
+    user = create_supervisor(username='supervisor', password="SecretPassword")
+    user2 = create_employee(username='trader', password="SecretPassword", supervisor=user.employee)
+    new_client = create_2clients(nip=5222851, nip2=45876321)
+    new_branch = create_branch(new_client, user2.employee)
+    new_product = create_product(6)
+    new_variant = create_variant(new_product, 4)
+    new_batch = create_batch(new_variant, 3)
+    new_order = create_order(new_branch, 3)
+    new_position = create_cart_position(new_order, new_batch)
+    
+    
+    
+    client.login(
+        username='trader',
+        password='SecretPassword',
+    )
+    
+    print("####################" + str(user.employee.id))
+    print('username ', user2.username)
+    print('password   ', user2.password)
+    print('new client id  ', new_client.id)
+    print('new branch id    ', new_branch.id)
+    print('New product id', new_product.id)
+    print( 'new variant id', new_variant.id)
+    print('new batch id  ', new_batch.id)
+    print('new order id   ', new_order.id)
+    print('new position id   ', new_position.id)
+    print("####################" + str(user2.employee.id))
+    
+    return client, user2
 
