@@ -98,6 +98,6 @@ class CartAdmin(admin.ModelAdmin):
     
     
 @admin.register(Localization)
-class LocationAdmin(admin.ModelAdmin):
-    list_display = ('employee' 'date', 'time', 'latitude', 'longtitude', 'note')
+class LocalizationAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'date', 'time', 'latitude', 'longitude', 'note')
 
