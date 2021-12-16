@@ -1,6 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
-from datetime import date, datetime
+
 
 
 from trader_app.models import Visit

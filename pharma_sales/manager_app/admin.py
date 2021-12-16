@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Employee, Client, Branch, Product, Variant, Batch, Invoice, Order, CalendarSupervisor, Cart
-from trader_app.models import Visit
+from trader_app.models import Visit, Localization
 
 def not_active(model_admin, request, query_set):
     query_set.update(is_active=False)
@@ -97,7 +97,7 @@ class CartAdmin(admin.ModelAdmin):
     list_display = ('order', 'batch', 'quantity')
     
     
-# @admin.register(Location)
-# class LocationAdmin(admin.ModelAdmin):
-#     list_display = ()
+@admin.register(Localization)
+class LocationAdmin(admin.ModelAdmin):
+    list_display = ('employee' 'date', 'time', 'latitude', 'longtitude', 'note')
 

@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.admin.widgets import AdminDateWidget
+
 
 from manager_app.models import ADRESS_TYPES, CLIENT_TYPE, WEEKDAY
 from .models import Visit

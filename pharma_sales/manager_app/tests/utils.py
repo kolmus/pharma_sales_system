@@ -1,6 +1,6 @@
 
 from django.contrib.auth.models import Permission, User
-from trader_app.models import Localization, Visit
+from trader_app.models import Visit
 from manager_app.models import (
     BIG_PHARM,
     FAMILY_PHARM,

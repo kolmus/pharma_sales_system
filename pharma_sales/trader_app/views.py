@@ -352,6 +352,7 @@ class TraderCartDeleteView(LoginRequiredMixin, View):
         
         return redirect(f'/trader/visit/{visit_id}/{branch_id}/orders/{order_id}/')
 
+
 class TraderOrderStatusUpdateView(LoginRequiredMixin, View):
     """
     View change status to 'Zamówienie przyjęte, oczekuje na weryfikację.'
@@ -429,7 +430,8 @@ class TraderClientAdd(LoginRequiredMixin, PermissionRequiredMixin, View):
             return redirect('/trader/')
         else:
             return render(request, 'trader_app/client_form.html', {'form': form})
-        
+
+
 class TraderClientList(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View lists all Traders clients
