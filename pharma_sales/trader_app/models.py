@@ -19,7 +19,7 @@ class Localization(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField(auto_now=True)
     time = models.TimeField(auto_now=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    note = models.CharField(max_length=128)
+    latitude = models.FloatField(null = True)
+    longitude = models.FloatField(null = True)
+    note = models.CharField(max_length=256)
     

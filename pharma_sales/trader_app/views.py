@@ -26,14 +26,18 @@ def save_coordinates(request, note):
         request (object): from View 
         note (str): note about reason of save location
     """    
-    print(request.COOKIES['long'])
-    print(request.COOKIES['lat'])
-    Localization.objects.create(
-        latitude = float(request.COOKIES['lat']),
-        longitude = float(request.COOKIES['long']),
-        employee = request.user.employee,
-        note = note
-    )
+    try:
+        Localization.objects.create(
+            latitude = float(request.COOKIES['lat']),
+            longitude = float(request.COOKIES['long']),
+            employee = request.user.employee,
+            note = note
+        )
+    except KeyError: 
+        Localization.objects.create(
+            employee = request.user.employee,
+            note = note
+        )
 
 class TraderLoginView(View):
     """View created for login page
@@ -249,7 +253,7 @@ class TraderOrderCartCreateView(LoginRequiredMixin, PermissionRequiredMixin, Vie
     View for making orders
     """
     permission_required = ('manager_app.add_cart', 'manager_app.add_order') 
-    
+
     def get(self, request, branch_id, visit_id):
         branch = Branch.objects.get(id=branch_id)
         form = CartForm()
@@ -372,7 +376,7 @@ class TraderEndVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
     
     def post(self, request, visit_id):
         visit = Visit.objects.get(id=visit_id)
-        save_coordinates(request, f'Zakończenie wizyty {visit.branch}')
+        save_coordinates(request, f'Zakończenie wizyty {visit_id}')
         
         visit = Visit.objects.get(id=visit_id)
         visit.visited = True

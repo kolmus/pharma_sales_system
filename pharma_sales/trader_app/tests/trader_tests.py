@@ -4,7 +4,7 @@ from datetime import date, datetime
 
 
 from trader_app.models import Visit
-from manager_app.models import Employee, Client, Branch, Variant, Order, Cart, CREATING_ST
+from manager_app.models import Employee, Client, Branch, Variant, Order, Cart, CREATING_ST, TO_VERIFY_ST
 
 @pytest.mark.django_db
 def test_trader_login_page(client, three_exemple_users):
@@ -44,6 +44,7 @@ def test_trader_delete_visit(client, trader_logged_user_everymodel):
     visit = Visit.objects.all()[0]
     visit_id = visit.id
     response = client.post(f'/trader/planning/2012-12-16/city2/{visit_id}/delete/')
+    assert response.status_code == 302
     assert len(Visit.objects.all()) == visits - 1
     assert len(Visit.objects.filter(id = visits)) == 0
     
@@ -101,3 +102,33 @@ def test_trader_delete_position_from_cart(client, trader_logged_user_everymodel)
     assert response.status_code == 302
     assert len(order.cart_set.all()) == positions - 1
     assert len(Cart.objects.filter(id = pos_id)) == 0
+    
+@pytest.mark.django_db
+def test_trader_update_order_status(client, trader_logged_user_everymodel):
+    order = Order.objects.all()[0]
+    ord_id = order.id
+    visit = Visit.objects.all()[0]
+    visit_id = visit.id
+    bran_id = visit.client_branch.id
+    
+    response = client.post(f'/trader/visit/{visit_id}/{bran_id}/orders/{ord_id}/status/{CREATING_ST}/')
+    assert response.status_code == 302
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == CREATING_ST
+    response = client.post(f'/orders/{ord_id}/status/{TO_VERIFY_ST}/')
+    assert response.status_code == 302
+    order = Order.objects.get(id=ord_id)
+    assert order.order_status == TO_VERIFY_ST
+    
+@pytest.mark.django_db
+def test_trader_end_visit(client, trader_logged_user_everymodel):          
+    visit = Visit.objects.all()[0]
+    visit_id = visit.id
+    assert visit.visited != True
+    response = client.post(f'/trader/visit/{visit_id}/visited/')
+    visit = Visit.objects.get(id = visit_id)
+    assert visit.visited == True
+    assert response.status_code == 302
+    
+
+    
