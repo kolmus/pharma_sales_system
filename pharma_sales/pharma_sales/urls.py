@@ -51,8 +51,8 @@ from manager_app.views import (
 
 from trader_app.views import (
     TraderCartModifyView,
-    TraderLoginView, 
-    TraderLogoutView, 
+    TraderLoginView,
+    TraderLogoutView,
     TraderDashboardView,
     TraderOrderCartCreateView,
     TraderPlaningVisitsView,
@@ -67,6 +67,7 @@ from trader_app.views import (
     TraderOrderStatusUpdateView,
     TraderEndVisitView,
     TraderClientAdd,
+    TraderClientList,
     
     
 )
@@ -118,6 +119,7 @@ urlpatterns = [
     path('trader/visit/<int:visit_id>/<int:branch_id>/orders/<int:order_id>/status/<int:status_value>/', TraderOrderStatusUpdateView.as_view()),
     path('trader/visit/<int:visit_id>/visited/', TraderEndVisitView.as_view()),
     path('trader/client/add/', TraderClientAdd.as_view()),
+    path('trader/client/list/', TraderClientList.as_view())
     
     
 ]

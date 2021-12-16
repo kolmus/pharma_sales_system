@@ -1,0 +1,35 @@
+{% extends 'trader_app/base.html' %}
+{% block content %}
+    <a href="/trader/client/add/"><button type="button">Dodaj klienta</button></a>
+    <dl>
+    {% for branch in branches %}
+        <dt>
+            {{branch}}
+        </dt>
+        <dd>
+            {{branch.province}}, {{branch.city}}
+        </dd>
+    {% endfor %}
+    </dl>
+    <div class="pagination">
+        <span class="step-links">
+            {% if branches.has_previous %}
+                <a href="?page={{ list.previous_page_number }}">poprzednia</a> |
+                {% else %}
+                poprzednia |
+            {% endif %}
+            {% for page in branches.paginator.page_range %}
+                {%  if page == branches.number %}
+                {{ page }} |
+                {% else %}
+                <a href="?page={{ page }}">{{ page }} </a>|
+                {% endif %}
+            {% endfor %}
+        {% if branches.has_next %}
+            <a href="?page={{ list.next_page_number }}">następna</a>
+        {% else %}
+            następna
+        {% endif %}
+        </span>
+    </div>
+{% endblock %}

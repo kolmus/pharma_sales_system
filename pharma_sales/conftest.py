@@ -181,4 +181,3 @@ def trader_logged_user_everymodel(client):
     print("####################" + str(user2.employee.id))
     
     return client, user2
-

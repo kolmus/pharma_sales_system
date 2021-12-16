@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-
+from django.core.paginator import Paginator
 from django.views import View
 from datetime import date
 
@@ -339,7 +339,7 @@ class TraderCartModifyView(LoginRequiredMixin, PermissionRequiredMixin, View):
             'order': order,
             'visit_id': visit_id
         })
-        
+
 
 class TraderCartDeleteView(LoginRequiredMixin, View):
     """
@@ -351,8 +351,7 @@ class TraderCartDeleteView(LoginRequiredMixin, View):
         position.delete()
         
         return redirect(f'/trader/visit/{visit_id}/{branch_id}/orders/{order_id}/')
-    
-    
+
 class TraderOrderStatusUpdateView(LoginRequiredMixin, View):
     """
     View change status to 'Zamówienie przyjęte, oczekuje na weryfikację.'
@@ -382,8 +381,8 @@ class TraderEndVisitView(LoginRequiredMixin, PermissionRequiredMixin, View):
         visit.visited = True
         visit.save()
         return redirect('/trader/start_day/')
-    
-    
+
+
 class TraderClientAdd(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
     View to crate new client ang main adress
@@ -426,6 +425,20 @@ class TraderClientAdd(LoginRequiredMixin, PermissionRequiredMixin, View):
             branch.visit_days = form.cleaned_data['visit_days']
             branch.visit_hour_from = form.cleaned_data['visit_hour_from']
             branch.visit_hour_to = form.cleaned_data['visit_hour_to']
+            branch.save()
             return redirect('/trader/')
         else:
             return render(request, 'trader_app/client_form.html', {'form': form})
+        
+class TraderClientList(LoginRequiredMixin, PermissionRequiredMixin, View):
+    """
+    View lists all Traders clients
+    """    
+    permission_required = ('manager_app.add_client', 'manager_app.add_branch')
+    
+    def get(self, request):
+        branches = Branch.objects.filter(account_manager = request.user.employee).order_by('name_of_branch')
+        paginator = Paginator(branches, 10)
+        page = request.GET.get('page')
+        branches = paginator.get_page(page)
+        return render(request, 'trader_app/clients.html', {'branches': branches})

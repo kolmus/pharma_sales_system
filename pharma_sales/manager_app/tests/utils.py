@@ -370,12 +370,3 @@ def create_visit(branch, user):
     visit.client_branch = branch
     visit.save()
     return visit
-    
-    
-    
-    
-    
-    
-    
-    
-    

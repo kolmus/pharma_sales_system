@@ -4,7 +4,7 @@ from datetime import date, datetime
 
 
 from trader_app.models import Visit
-from manager_app.models import Employee, Client, Branch, Variant, Order, Cart, CREATING_ST, TO_VERIFY_ST
+from manager_app.models import FAMILY_PHARM, MONDAY, Client, Branch, Variant, Order, Cart, CREATING_ST, TO_VERIFY_ST
 
 @pytest.mark.django_db
 def test_trader_login_page(client, three_exemple_users):
@@ -35,6 +35,7 @@ def test_trader_add_visit(client, trader_logged_user_everymodel):
     branches = Branch.objects.filter(city = 'city2')                 # to update after chaange planning view form
     visits = len(Visit.objects.all())
     response = client.post('/trader/planning/2012-12-16/city2/', {'branch': branches[0].id})
+    print(response.content)
     assert response.status_code == 200
     assert len(Visit.objects.all()) == visits + 1
 
@@ -130,5 +131,32 @@ def test_trader_end_visit(client, trader_logged_user_everymodel):
     assert visit.visited == True
     assert response.status_code == 302
     
-
+@pytest.mark.django_db
+def test_trader_add_client_and_min_branch(client, trader_logged_user_everymodel):  
+    branches = Branch.objects.all()
+    clients = Client.objects.all()
+    len_clients = len(clients)
+    len_branches = len(branches)
+    assert len(clients.filter(nip=5222851149)) == 0
     
+    response = client.post('/trader/client/add/', {
+        'nip': 5222851149,
+        'company_name': 'KolmusPharm Sp z o.o.',
+        'short_company_name': 'KolmusPharm',
+        'regon': 12365,
+        'type': FAMILY_PHARM,
+        'city': "Warszawa",
+        'name_of_branch': 'oddział Bemowo',
+        'zip_code': '01-460',
+        'street': 'Górczewska',
+        'building_number': '200C',
+        'visit_days': MONDAY,
+    })
+    print(response.content)
+    assert response.status_code == 302
+    assert len(Client.objects.filter(nip=5222851149)) == 1
+    assert len(Client.objects.all()) == len_clients + 1
+    assert len(Branch.objects.all()) == len_branches + 1
+    new_client = Client.objects.filter(nip=5222851149)[0]
+    assert new_client.company_name == 'KolmusPharm Sp z o.o.'
+    assert new_client.branch_set.all()[0].name_of_branch == 'oddział Bemowo'
