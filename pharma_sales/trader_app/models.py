@@ -22,4 +22,3 @@ class Localization(models.Model):
     latitude = models.FloatField(null = True)
     longitude = models.FloatField(null = True)
     note = models.CharField(max_length=256)
-    

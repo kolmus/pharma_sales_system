@@ -52,7 +52,7 @@ class EmployeeEditForm(forms.Form):
     phone = forms.IntegerField(label='Numer telefonu')
     role = forms.CharField(label='Stanowisko')
     supervisor = forms.ModelChoiceField(queryset=Employee.objects.filter(is_supervisor=True), empty_label='supervisor', label='Przełożony', required=False)
-    
+
 
 class ClientForm(forms.ModelForm):
     # logo = forms.ImageField(required=False)
@@ -60,7 +60,7 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = ['nip', 'company_name', 'logo', 'regon', 'krs', 'type']
-        
+
 
 class VariantForm(forms.Form):
     product = forms.ModelChoiceField(queryset=Product.objects.all(), label='Produkt główny')
@@ -78,8 +78,8 @@ class VariantForm(forms.Form):
     photo8 = forms.ImageField(label='Zdjęcie8', required=False)
     photo9 = forms.ImageField(label='Zdjęcie9', required=False)
     photo10 = forms.ImageField(label='Zdjęcie10', required=False)
-    
-    
+
+
 class CartForm(forms.Form):
     variant = forms.ModelChoiceField(queryset = Variant.objects.filter(is_active=True).order_by('dose'), empty_label='Wybierz produkt', label="Wybierz produkt")
     quantity = forms.IntegerField(label='Podaj ilość paczek')
@@ -95,10 +95,10 @@ class CartForm(forms.Form):
             return cleaned_data
         else:
             raise forms.ValidationError('Ilość mniejsza niż 0 lub większa niż stan magazynowy')
-        
+
 
 class CalendarForm(forms.Form):
     employee = forms.ModelChoiceField(queryset=None, label=False, required=False)
     note = forms.CharField(label=False, widget=forms.Textarea(attrs={'placeholder': 'Notatka z dnia'}), required=False)
-    
+
 

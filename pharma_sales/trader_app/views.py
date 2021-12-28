@@ -8,10 +8,10 @@ from datetime import date
 from manager_app.models import (
     FAMILY_PHARM,
     REGISTER_ADRESS,
-    Branch, 
-    Order, 
-    Cart, 
-    Product, 
+    Branch,
+    Order,
+    Cart,
+    Product,
     Client
 )
 from manager_app.forms import LoginForm, CartForm

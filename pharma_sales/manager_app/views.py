@@ -149,7 +149,7 @@ class DashboardView(LoginRequiredMixin, PermissionRequiredMixin, View):
                 meeting.note = form.cleaned_data['note']
                 meeting.save()
         return redirect('/')
-        
+
 
 class EmployeeView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """class for Emlpoyers list View
@@ -353,7 +353,7 @@ class EmployeeEditView(LoginRequiredMixin, PermissionRequiredMixin, View):
             return redirect(f'/employees/{edited_employee.id}/')
         else:
             return render(request, 'manager_app/employee_form.html', {'form': form, 'legend': 'Dodaj nowego pracownika'})
-        
+
 
 class ClientCreateView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
@@ -412,8 +412,8 @@ class ClientListView(LoginRequiredMixin, PermissionRequiredMixin, View):
     def get(self, request):
         traders = Employee.objects.filter(supervisor=request.user.employee)
         return render(request, 'manager_app/clients.html', {'traders': traders})
-    
-    
+
+
 class ClientUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
     View for update Client
@@ -422,8 +422,8 @@ class ClientUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Client
     fields = '__all__'
     success_url = f'/clients/'
-    
-    
+
+
 class BranchCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     View for create Branch
@@ -442,8 +442,8 @@ class BranchUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Branch
     fields = '__all__'
     success_url = '/clients/'
-    
-    
+
+
 class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
     View for create Product
@@ -462,6 +462,7 @@ class ProductUpdateView(LoginRequiredMixin,PermissionRequiredMixin, UpdateView):
     model = Product
     fields = '__all__'
     success_url = '/products/'
+
 
 class ProductListView(LoginRequiredMixin, PermissionRequiredMixin, View):
     """
@@ -563,6 +564,7 @@ class VariantUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
         else:
             return render(request, 'manager_app/variant_form.html', {'form': form, 'legend': 'Dodaj nowy wariant produktu'})
         test_add_batch
+
 
 class BatchCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """
@@ -734,5 +736,3 @@ class OrderCSModifyView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     model = Order
     fields = ['order_number', 'branch', 'discount']
     success_url = '/orders/'
-
-

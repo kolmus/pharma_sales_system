@@ -22,7 +22,7 @@ def test_trader_login_page(client, three_exemple_users):
     assert response.status_code == 302
     response = client.get('/trader/')
     assert response.status_code == 403
-    
+
 @pytest.mark.django_db
 def test_trader_planning_view(client, trader_logged_user_everymodel):
     response = client.post('/trader/planning/', {'plan_date': '2012-12-16', 'city': 'city2'})   # to update after change form
@@ -48,8 +48,7 @@ def test_trader_delete_visit(client, trader_logged_user_everymodel):
     assert response.status_code == 302
     assert len(Visit.objects.all()) == visits - 1
     assert len(Visit.objects.filter(id = visits)) == 0
-    
-    
+
 @pytest.mark.django_db
 def test_trader_add_Order_and_cart(client, trader_logged_user_everymodel):
     branch = Branch.objects.all()[0]
@@ -67,7 +66,7 @@ def test_trader_add_Order_and_cart(client, trader_logged_user_everymodel):
     assert response.status_code == 302
     assert len(Order.objects.all()) == orders + 1
     assert len(Cart.objects.all()) == carts + 1
-    
+
 @pytest.mark.django_db
 def test_trader_add_position_to_cart(client, trader_logged_user_everymodel):
     order = Order.objects.filter(order_status = CREATING_ST)[0]
@@ -103,7 +102,7 @@ def test_trader_delete_position_from_cart(client, trader_logged_user_everymodel)
     assert response.status_code == 302
     assert len(order.cart_set.all()) == positions - 1
     assert len(Cart.objects.filter(id = pos_id)) == 0
-    
+
 @pytest.mark.django_db
 def test_trader_update_order_status(client, trader_logged_user_everymodel):
     order = Order.objects.all()[0]
@@ -120,9 +119,9 @@ def test_trader_update_order_status(client, trader_logged_user_everymodel):
     assert response.status_code == 302
     order = Order.objects.get(id=ord_id)
     assert order.order_status == TO_VERIFY_ST
-    
+
 @pytest.mark.django_db
-def test_trader_end_visit(client, trader_logged_user_everymodel):          
+def test_trader_end_visit(client, trader_logged_user_everymodel):
     visit = Visit.objects.all()[0]
     visit_id = visit.id
     assert visit.visited != True
@@ -130,9 +129,9 @@ def test_trader_end_visit(client, trader_logged_user_everymodel):
     visit = Visit.objects.get(id = visit_id)
     assert visit.visited == True
     assert response.status_code == 302
-    
+
 @pytest.mark.django_db
-def test_trader_add_client_and_min_branch(client, trader_logged_user_everymodel):  
+def test_trader_add_client_and_min_branch(client, trader_logged_user_everymodel):
     branches = Branch.objects.all()
     clients = Client.objects.all()
     len_clients = len(clients)
