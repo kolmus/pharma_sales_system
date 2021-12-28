@@ -132,4 +132,4 @@ dmypy.json
 pharma_sales/media
 
 #django
-pharma_sales/pharma_sales/settings.py
+local_settings.py
