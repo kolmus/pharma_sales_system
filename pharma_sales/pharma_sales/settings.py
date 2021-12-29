@@ -26,8 +26,6 @@ SECRET_KEY = 'django-insecure-v1lx-k5q62=d0^nd!!alnaq*1yc@$!$gq^=4%o0qs7n#c-9#u3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 LOGIN_URL = '/login/'
 
 # Application definition
@@ -115,6 +113,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/img/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    '/manager_app/static/',
+    '/trader_app/static/'
+]
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
