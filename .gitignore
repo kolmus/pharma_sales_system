@@ -133,3 +133,4 @@ pharma_sales/media
 
 #django
 local_settings.py
+settings.py
